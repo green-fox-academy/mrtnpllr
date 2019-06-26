@@ -128,4 +128,6 @@ fabric.properties
 # Ignore all local history of files
 .history
 
-# End of https://www.gitignore.io/api/c++,clion,visualstudiocode
+# End of https://www.gitignore.io/api/c++,clion,visualstudiocodie
+.idea
+cmake-build-debug
