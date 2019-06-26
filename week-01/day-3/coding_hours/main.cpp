@@ -11,19 +11,18 @@ int main(int argc, char* args[]) {
     // Print the percentage of the coding hours in the semester if the average
     // working hours weekly is 52
 
-    int CodeHours = 6; //Hours
-    int Semester = 119; //Days
-    float SemesterHours = 119 * 24;
+    int codeHours = 6; //Hours
+    int semester = 17*7; //Days
+    float semesterHours = semester * 24;
 
-    int SemesterWeekDays = Semester - (17*2);
+    int semesterWeekDays = semester - (17*2);
 
-    std::cout << "Coding hours on workdays Sum: " << CodeHours * SemesterWeekDays << std::endl;
+    std::cout << "Coding hours on workdays Sum: " << codeHours * semesterWeekDays << std::endl;
 
-    float WorkingHoursWeekly = 52;
+    float workingHoursWeekly = 52;
+    float workingHoursSum = 52 * 17;
 
-    std::cout << "Percentage of coding hours in semester: " << (SemesterHours / WorkingHoursWeekly) << std::endl;
-
-
+    std::cout << "Percentage of coding hours in semester: " << (workingHoursSum / semesterHours) * 100 << " %" << std::endl;
 
     return 0;
 }
