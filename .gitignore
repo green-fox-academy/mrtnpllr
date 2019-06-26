@@ -129,5 +129,3 @@ fabric.properties
 .history
 
 # End of https://www.gitignore.io/api/c++,clion,visualstudiocodie
-.idea
-cmake-build-debug
