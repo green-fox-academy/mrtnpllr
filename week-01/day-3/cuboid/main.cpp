@@ -12,7 +12,6 @@ int main(int argc, char* args[]) {
     double sideB;
     double sideC;
 
-
     std::cout <<"Please give me 3 sides!" << std::endl;
 
     std::cout << "First side: " << std::endl;
@@ -27,8 +26,6 @@ int main(int argc, char* args[]) {
 
     std::cout << "The Surface area of the cuboid is: " << surfaceArea << std::endl;
     std::cout << "The Volume of the cuboid is: " << volume << std::endl;
-
-
 
     return 0;
 }

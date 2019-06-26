@@ -1,4 +1,6 @@
 #include <iostream>
+
+//This is a code which is intended to  be a note
 //using namespace std; -> nagyon sok veszélye van! Amatőr...
 
 int main() {
@@ -32,6 +34,7 @@ int main() {
     std::cout << "b3: " << b3 << std::endl;
 
     //std:: -> std namespace, ugyanazt a tipus nevet le lehessen irni tobbfelekeppen is
+
     return 0;
 }
 

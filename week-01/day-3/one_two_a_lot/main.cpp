@@ -13,7 +13,7 @@ int main(int argc, char* args[]) {
     std::cout << "Give me a number!" << std::endl;
     std::cin >> num;
 
-    if(num <= 0) {
+    if (num <= 0) {
         std::cout << "Not enough" << std::endl;
     } else if (num == 1) {
          std::cout << "One" << std::endl;

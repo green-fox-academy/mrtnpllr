@@ -11,6 +11,4 @@ int main(int argc, char* args[]) {
     std::cin >> name;
     std::cout << "Hello, " << name << "!" << std::endl;
 
-
-
 }

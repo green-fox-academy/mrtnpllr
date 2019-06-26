@@ -16,11 +16,11 @@ int main(int argc, char* args[]) {
     std::cout << "Name: " << name << std::endl;
     std::cout << "Age: " << age << std::endl;
     std::cout << "Height: " << height << std::endl;
-    if(isMarried == 0) {
+
+    if (isMarried == false) {
 
         std::cout << "Marital status: Not married" << std::endl;
-    }
-    else {
+    }else if (isMarried == true) {
 
         std::cout << "Marital status: Married" << std::endl;
     }

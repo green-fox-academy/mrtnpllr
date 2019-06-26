@@ -10,9 +10,9 @@ int main(int argc, char* args[]) {
     std::cout << "Give me a number!" << std::endl;
     std::cin >> num;
 
-    if(num % 2 == 0){
+    if (num % 2 == 0) {
         std::cout << num << " is even" << std::endl;
-    }else{
+    } else {
         std::cout << num << " is odd" << std::endl;
     }
 
