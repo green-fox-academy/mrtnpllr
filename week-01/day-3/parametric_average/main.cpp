@@ -15,16 +15,15 @@ int main(int argc, char* args[]) {
     std::cout << "Give me a number!" << std::endl;
     std::cin >> num1;
 
+    float sum=0;
+
     for (int i = 1; i <= num1 ; i++) {
-        int sum;
         std::cout << "Give me more numbers!" << std::endl;
         std::cin >> num2;
-
-        for (int j = 1; j <= i; j++){
-        }
-
-
+        sum = sum + num2;
     }
+
+    std::cout << "Sum: " << sum << ", Average: " << (sum / num1) << std::endl;
 
     return 0;
 }
