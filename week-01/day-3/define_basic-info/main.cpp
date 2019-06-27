@@ -20,7 +20,7 @@ int main(int argc, char* args[]) {
     if (isMarried == false) {
 
         std::cout << "Marital status: Not married" << std::endl;
-    }else if (isMarried == true) {
+    }else {
 
         std::cout << "Marital status: Married" << std::endl;
     }
