@@ -18,16 +18,16 @@ int main (int argc, char* arcs[]) {
     std::cout << "Give me a number!" << std::endl;
     std::cin >> num;
 
-    for (int i = 1; i <= num; i++) {
-        for (int j = 1; j <= i; j++) {
-            std::cout <<"*";
-            }
-        for (int k =1; k <= i; k++) {
-            std::cout << " ";
+    for (int i = 1; i <=num ; ++i) {
+
+        for (int j = 1; j <=i ; j++) {
+            std::cout << "*";
         }
-        std::cout << "\n";
+        std::cout << std::endl;
 
     }
+
+
 
 return 0;
 }
