@@ -13,19 +13,17 @@ int main(int argc, char* args[]) {
     // The triangle should have as many lines as the number was
 
     int num;
-    char astrix = '*';
+    std::string astrix = "*";
 
     std::cout << "Give me a number!" << std::endl;
     std::cin >> num;
 
-    std::cout << astrix * num << std::endl;
-
-    while (astrix < num) {
-
-        std::cout << astrix << std::endl;
+    for (int i = 1; i <= num; i++) {
+        for (int j = 1; j <= i; j++) {
+            std::cout << "*";
+        }
+        std::cout << std::endl;
     }
 
     return 0;
 }
-
-//Work in progress
