@@ -15,18 +15,21 @@ int main(int argc, char* args[]) {
     //
     // - Print this two dimensional array to the output
 
-    int x;
-    int y;
-    int twoDimArray[x][y] = {};
+    int n = 4;
+    int matrixArray[n][n];
 
-    for (int i = 0; i <=x ; ++i) {
-        for (int j = 0; j <=y ; ++j) {
-            std::cout << twoDimArray[x][y] << std::endl;
+    for (int i = 0; i < n ; ++i) {
+        for (int j = 0; j < n ; ++j) {
+            if (i == j) {
+                matrixArray[i][j] = 1;
+                std::cout << matrixArray[i][j];
+            } else {
+                matrixArray[i][j] = 0;
+                std::cout << matrixArray[i][j];
+            }
         }
-
+        std::cout << std::endl;
     }
 
     return 0;
 }
-
-//Work in progress, exotic error!
