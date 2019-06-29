@@ -22,7 +22,11 @@ int main()
         } else if (choice == '*') {
             std::cout << num1 * num2 << std::endl;
         } else if (choice == '/') {
-            std::cout << num1 / num2 << std::endl;
+            if(num2 != 0) {
+                std::cout << num1 / num2 << std::endl;
+            }else {
+                std::cout << "You can't divide by zero!";
+            }
         } else {
             std::cout << "Invalid character";
         }
