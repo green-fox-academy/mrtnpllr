@@ -27,13 +27,10 @@ void isAnagram(std::string str1, std::string str2) {
         for (int i = 0; i < str1.size(); ++i) {
             varIndex = str1.at(i);
             varIndex2 = str2.at(i);
-            std::cout << varIndex << "    " << varIndex2 << std::endl;
             int x = varIndex - 0;
             int y = varIndex2 - 0;
             sum1 = sum1 + x;
             sum2 = sum2 + y;
-            std::cout << x << "  " << y << std::endl;
-            std::cout << sum1 << "   " << sum2 << std::endl;
         }
         if(sum1 == sum2) {
             std::cout << str1 << " and " << str2 << " are anagrams." <<std::endl;
