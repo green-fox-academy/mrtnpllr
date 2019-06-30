@@ -9,6 +9,6 @@ int main(int argc, char* args[])
     url.replace(38, 41, "odds");
 
     std::cout << url << std::endl;
-    
+
     return 0;
 }
