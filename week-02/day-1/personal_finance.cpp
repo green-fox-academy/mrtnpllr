@@ -19,7 +19,7 @@ int main(int argc, char *args[])
     std::vector<int> spending = {500, 1000, 1250, 175, 800, 120};
 
     spendingCalc(spending);
-    
+
     return 0;
 }
 
