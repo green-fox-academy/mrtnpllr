@@ -34,7 +34,7 @@ int main(int argc, char *args[])
     std::cout << myMap.size() << std::endl;
 
     //Print the value that is associated with key 99
-    std::cout << myMap[99];
+    std::cout << myMap[99] << std::endl;
 
     //Remove the key-value pair where with key 97
     myMap.erase(97);
