@@ -1,6 +1,5 @@
-#include<iostream>
-#include<vector>
-#include<map>
+#include <iostream>
+#include <map>
 
 int main(int argc, char *args[])
 {
