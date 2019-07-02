@@ -24,21 +24,19 @@ int main()
     int sizeOfArray = sizeof(array) / sizeof(array[0]);
 
     biggestNumber(array, sizeOfArray);
-
+    
     return 0;
 }
 
 void biggestNumber(int arr[], int sizeOfArray)
 {
-    int max = 0;
     int *arrPtr = arr;
 
     for (int i = 0; i < sizeOfArray; ++i) {
-        if (arr[i] > max) {
-            max = arr[i];
-            arrPtr = &max;
+        if (arr[i] > *arrPtr) {
+            arrPtr = &arr[i];
         }
     }
 
-    std::cout << max << std::endl << arrPtr << std::endl;
+    std::cout << *arrPtr << std::endl << arrPtr << std::endl;
 }
