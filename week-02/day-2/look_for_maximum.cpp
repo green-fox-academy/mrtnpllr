@@ -31,12 +31,14 @@ int main()
 void biggestNumber(int arr[], int sizeOfArray)
 {
     int max = 0;
+    int *arrPtr = arr;
 
     for (int i = 0; i < sizeOfArray; ++i) {
         if (arr[i] > max) {
             max = arr[i];
+            arrPtr = &max;
         }
     }
 
-    std::cout << max << std::endl << &max << std::endl;
+    std::cout << max << std::endl << arrPtr << std::endl;
 }
