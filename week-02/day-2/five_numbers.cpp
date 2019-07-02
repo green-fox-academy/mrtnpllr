@@ -16,7 +16,7 @@ int main()
     }
 
     for (int j = 0; j < sizeof(array) / sizeof(array[0]); ++j) {
-        std::cout << *arrayPtr + j << std::endl;
+        std::cout << *(arrayPtr + j) << std::endl;
     }
 
     return 0;
