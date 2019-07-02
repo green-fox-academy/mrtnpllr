@@ -17,11 +17,9 @@ int main ()
 }
 
 void swap (int *a, int *b) {
-   int **aPtr = &a;
-   int **bPtr = &b;
    int tmp;
 
-   tmp = **aPtr;
-   **aPtr = **bPtr;
-   **bPtr = tmp;
+   tmp = *a;
+   *a = *b;
+   *b = tmp;
 }
