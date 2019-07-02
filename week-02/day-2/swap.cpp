@@ -1,6 +1,6 @@
 #include <iostream>
 
-void swap (int a, int b);
+void swap (int *a, int *b);
 
 int main ()
 {
@@ -10,18 +10,18 @@ int main ()
     int a = 10;
     int b = 316;
 
-    swap(a, b);
+    swap(&a, &b);
+    std::cout << a << std::endl<< b << std::endl;
 
     return 0;
 }
 
-void swap (int a, int b) {
-    int *aPtr = &a;
-    int *bPtr = &b;
-    int tmp = *aPtr;
+void swap (int *a, int *b) {
+   int **aPtr = &a;
+   int **bPtr = &b;
+   int tmp;
 
-    a = b;
-    b = tmp;
-
-    std::cout << tmp << std::endl << a << std::endl << b << std::endl;
+   tmp = **aPtr;
+   **aPtr = **bPtr;
+   **bPtr = tmp;
 }
