@@ -1,6 +1,6 @@
 #include <iostream>
 
-void arrayFunction (int numArr[], int sizeOfArr);
+int *arrayFunction(int numArr[], int sizeOfArr);
 
 int main()
 {
@@ -10,20 +10,19 @@ int main()
     int numbers[] = {12, 4, 66, 101, 87, 3, 15};
     int sizeOfArr = sizeof(numbers) / sizeof(numbers[0]);
 
-    arrayFunction(numbers, sizeOfArr);
+    std::cout << *arrayFunction(numbers, sizeOfArr) << std::endl;
 
     return 0;
 }
 
-void arrayFunction (int numArr[], int sizeOfArr){
-    int *ptrMin;
-    int min = 100000000;
+int *arrayFunction(int numArr[], int sizeOfArr)
+{
+    int *ptrMin = &numArr[0];
 
     for (int i = 0; i < sizeOfArr; ++i) {
-        if (min > numArr[i]) {
-            min = numArr[i];
+        if (*ptrMin > numArr[i]) {
+            ptrMin = &numArr[i];
         }
-        std::cout << numArr[i] << std::endl;
-        std::cout << min << std::endl;
     }
+    return ptrMin;
 }
