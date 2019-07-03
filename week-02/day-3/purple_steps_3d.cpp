@@ -9,8 +9,10 @@ void drawBoxes(int x, int y, int z, int w, SDL_Renderer *gRenderer);
 
 void draw(SDL_Renderer *gRenderer)
 {
+    int boxSize = 0;
     for (int i = 1; i < 7; i++) {
-        drawBoxes((20 * i) * i/2 , (20 * i) * i/2, (20 * i), (20 * i), gRenderer);
+        drawBoxes((i * boxSize)/2, (i * boxSize)/2, (20 * i), (20 * i), gRenderer);
+        boxSize = (20 * i);
     }
 }
 
