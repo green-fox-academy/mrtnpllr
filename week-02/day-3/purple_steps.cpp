@@ -18,10 +18,10 @@ void drawBoxes(int x, int y, SDL_Renderer *gRenderer)
 {
 
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 1);
-    SDL_Rect drawRect = {x, y, 20, 20};
+    SDL_Rect drawRect = {x - 1, y  - 1, 20, 20};
     SDL_RenderDrawRect(gRenderer, &drawRect);
-    
+
     SDL_SetRenderDrawColor(gRenderer, 177, 69, 244, 1);
-    SDL_Rect fillRect = {x, y, 19, 19};
+    SDL_Rect fillRect = {x, y, 18, 18};
     SDL_RenderFillRect(gRenderer, &fillRect);
 }
