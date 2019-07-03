@@ -24,7 +24,7 @@ int main()
     int sizeOfArray = sizeof(array) / sizeof(array[0]);
 
     biggestNumber(array, sizeOfArray);
-    
+
     return 0;
 }
 
