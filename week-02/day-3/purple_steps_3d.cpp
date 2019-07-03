@@ -11,7 +11,7 @@ void draw(SDL_Renderer *gRenderer)
 {
     int boxSize = 0;
     for (int i = 1; i < 7; i++) {
-        drawBoxes((i * boxSize)/2, (i * boxSize)/2, (20 * i), (20 * i), gRenderer);
+        drawBoxes((i * boxSize) / 2, (i * boxSize) / 2, (20 * i), (20 * i), gRenderer);
         boxSize = (20 * i);
     }
 }
@@ -20,7 +20,7 @@ void drawBoxes(int x, int y, int z, int w, SDL_Renderer *gRenderer)
 {
 
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 1);
-    SDL_Rect drawRect = {(x -1), (y - 1), z, w};
+    SDL_Rect drawRect = {(x - 1), (y - 1), z, w};
     SDL_RenderDrawRect(gRenderer, &drawRect);
 
     SDL_SetRenderDrawColor(gRenderer, 177, 69, 244, 1);
