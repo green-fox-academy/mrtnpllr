@@ -3,9 +3,9 @@
 #include <vector>
 #include <algorithm>
 
-void productScanner (std::map<std::string, int> listScanner);
+void productScanner(std::map<std::string, int> listScanner);
 
-int main(int argc, char* args[])
+int main(int argc, char *args[])
 {
     /*We are going to represent our products in a map where the keys are strings representing the product's name
     and the values are numbers representing the product's price.
@@ -25,14 +25,14 @@ int main(int argc, char* args[])
     What is the most expensive product?++
     What is the average price?++
     How many products' price is below 300?++
-    Is there anything we can buy for exactly 125?
+    Is there anything we can buy for exactly 125?+
     What is the cheapest product?*/
     std::map<std::string, int> productList = {
-            {"Eggs", 200},
-            {"Milk", 200},
-            {"Fish", 400},
-            {"Apples", 150},
-            {"Bread", 50},
+            {"Eggs",    200},
+            {"Milk",    200},
+            {"Fish",    400},
+            {"Apples",  150},
+            {"Bread",   50},
             {"Chicken", 550}
     };
 
@@ -41,7 +41,7 @@ int main(int argc, char* args[])
     return 0;
 }
 
-void productScanner (std::map<std::string, int> listScanner)
+void productScanner(std::map<std::string, int> listScanner)
 {
     int sum = 0;
     int average;
@@ -52,7 +52,7 @@ void productScanner (std::map<std::string, int> listScanner)
     std::map<std::string, int>::iterator it;
     it = listScanner.begin();
 
-    for(; it != listScanner.end(); it++) {
+    for (; it != listScanner.end(); it++) {
         sum = sum + it->second;
     }
 
@@ -68,14 +68,18 @@ void productScanner (std::map<std::string, int> listScanner)
         prices.push_back(listScanner.at(it->first));
     }
 
-    mostExpensive = *max_element(prices.begin(), prices.end());
-
+    int max = 0;
+    std::map<std::string, int>::iterator maxIt;
+    std::string value;
     it = listScanner.begin();
-    for (; it != listScanner.end(); it++) {
-        if (it->second == mostExpensive) {
-            std::cout << "The most expensive item is: " << it->first << std::endl;
+    for (; it != listScanner.end(); ++it) {
+        if (max < it->second) {
+            max = it->second;
+            value = it->first;
+            maxIt = it;
         }
     }
+    std::cout << "The most expensive item is: " << maxIt->first << std::endl;
 
     average = sum / listScanner.size();
     std::cout << "The average price is: " << average << std::endl;
@@ -88,5 +92,22 @@ void productScanner (std::map<std::string, int> listScanner)
     }
 
     std::cout << "Items below 300: " << itemsBelow300.size() << std::endl;
+
+
+    bool noItem;
+    it = listScanner.begin();
+    for (; it != listScanner.end(); it++) {
+        if (it->second == 125) {
+            std::cout << "You can buy: " << it->first << " for 125." << std::endl;
+        } else {
+            noItem = true;
+        }
+    }
+
+    if (noItem == true) {
+        std::cout << "There is nothing for 125." << std::endl;
+    }
+
+    it = listScanner.begin();
 
 }
