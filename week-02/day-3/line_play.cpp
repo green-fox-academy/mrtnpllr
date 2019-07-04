@@ -1,7 +1,5 @@
 #include "draw.h"
 
-void drawLines(int x1, int y1, int x2, int y2, SDL_Renderer *gRenderer);
-
 void draw(SDL_Renderer *gRenderer)
 {
     SDL_SetRenderDrawColor(gRenderer, 60, 184, 120, 1);
@@ -15,5 +13,4 @@ void draw(SDL_Renderer *gRenderer)
     for (int j = 0; j <= 12; j++) {
         SDL_RenderDrawLine(gRenderer, 0, 20 + (j * widthHeight / 12), 20 + (j * widthHeight / 12), widthHeight);
     }
-
 }
