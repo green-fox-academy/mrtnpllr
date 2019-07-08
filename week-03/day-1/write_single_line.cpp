@@ -10,7 +10,7 @@ int main()
     std::string myName = "Piller Marton";
 
     openFile << myName;
-    
+
     openFile.close();
 
     return 0;
