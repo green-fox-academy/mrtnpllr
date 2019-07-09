@@ -26,15 +26,20 @@ int main(int argc, char *args[])
 
 void unique(int arr[], int sizeOfArr)
 {
-    int min = 0;
     std::vector<int> newList;
 
     for (int i = 0; i < sizeOfArr; ++i) {
-        if (min < arr[i]) {
-            min = arr[i];
-            newList.push_back(min);
+        bool isIn = false;
+        for (int j = 0; j < newList.size(); ++j) {
+            if (arr[i] == newList[j]) {
+                isIn = true;
+            }
+        }
+        if (!isIn) {
+            newList.push_back(arr[i]);
         }
     }
+
     for (int j = 0; j < newList.size(); ++j) {
         std::cout << newList[j] << std::endl;
     }
