@@ -120,19 +120,16 @@ std::vector<std::string> getPost(std::string filename)
 //getPostRatio function
 double getPostRatio(std::vector<std::string> vecIn)
 {
-    double counter1 = 0;
-    double counter2 = 0;
+    double counterGet = 0;
+    double counterPost = 0;
 
     for (int i = 0; i < vecIn.size(); ++i) {
         if (vecIn.at(i) == "GET") {
-            counter1++;
+            counterGet++;
         } else if (vecIn.at(i) == "POST") {
-            counter2++;
+            counterPost++;
         }
     }
 
-    return counter1 / counter2;
+    return counterGet / counterPost;
 }
-
-//Ha ebben a függvényben double typeot használok, jól visszaadja, de ha intet, akkor nem. Miért? A függvény doublet ad vissza.
-//Két int elosztva miért nem lehet double, ha avisszatérési type double?
