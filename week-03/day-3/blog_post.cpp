@@ -25,7 +25,7 @@ int main ()
     BlogPost Post2("Tim Urban", "Wait but why", "A popular long-form, stick-figure-illustrated blog about almost everything.", "2010.10.10");
     BlogPost Post3(author3, title3, text3, date3);
 
-    //std::cout << Post3.getTitle() << std::endl << Post3.getText() << std::endl << Post3.getAuthorName() << std::endl << Post3.getPublicationDate() << std::endl;
-
+    std::cout << Post3.getTitle() << std::endl << Post3.getText() << std::endl << Post3.getAuthorName() << std::endl << Post3.getPublicationDate() << std::endl;
+    
     return 0;
 }
