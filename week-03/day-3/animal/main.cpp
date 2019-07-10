@@ -19,6 +19,6 @@ int main()
 
     std::cout << "The hunger level of gorilla after eating is: " << gorilla.getHunger() << std::endl;
     std::cout << "The thirst level of gorilla after drinking is: " << gorilla.getThirst() << std::endl;
-    
+
     return 0;
 }
