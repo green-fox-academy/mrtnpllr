@@ -26,6 +26,6 @@ int main ()
     BlogPost Post3(author3, title3, text3, date3);
 
     std::cout << Post3.getTitle() << std::endl << Post3.getText() << std::endl << Post3.getAuthorName() << std::endl << Post3.getPublicationDate() << std::endl;
-    
+
     return 0;
 }
