@@ -17,7 +17,7 @@ std::vector<Pokemon> initializePokemons()
     return pokemons;
 }
 
-int main(int argc, char* args[])
+int main(int argc, char *args[])
 {
     std::vector<Pokemon> pokemonOfAsh = initializePokemons();
 
@@ -33,20 +33,10 @@ int main(int argc, char* args[])
 
     std::string name;
 
-    if (pokemonOfAsh.at(0).isEffectiveAgainst(wildPokemon)){
-        name = pokemonOfAsh.at(0).getPokemonName();
-    }
-    if (pokemonOfAsh.at(1).isEffectiveAgainst(wildPokemon)){
-        name = pokemonOfAsh.at(1).getPokemonName();
-    }
-    if (pokemonOfAsh.at(2).isEffectiveAgainst(wildPokemon)){
-        name = pokemonOfAsh.at(2).getPokemonName();
-    }
-    if (pokemonOfAsh.at(3).isEffectiveAgainst(wildPokemon)){
-        name = pokemonOfAsh.at(3).getPokemonName();
-    }
-    if (pokemonOfAsh.at(4).isEffectiveAgainst(wildPokemon)){
-        name = pokemonOfAsh.at(4).getPokemonName();
+    for (int i = 0; i < pokemonOfAsh.size(); ++i) {
+        if (pokemonOfAsh.at(i).isEffectiveAgainst(wildPokemon)) {
+            name = pokemonOfAsh.at(i).getPokemonName();
+        }
     }
 
     std::cout << "I choose You, " << name << std::endl;
