@@ -41,7 +41,7 @@ int main(int argc, char *args[])
     bool allSix2;
     while (!allSix2) {
         diceSet.roll();
-        allSix = true;
+        allSix2 = true;
         for (int i = 0; i < diceSet.getCurrent().size(); ++i) {
             if (diceSet.getCurrent(i) != 6) {
                 allSix2 = false;
