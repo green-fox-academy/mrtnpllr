@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 
 //We have bunnies standing in a line, numbered 1, 2, ... The odd bunnies (1, 3, ..) have the normal 2 ears.
 //The even bunnies (2, 4, ..) we'll say have 3 ears, because they each have a raised foot.
@@ -9,14 +8,10 @@ int calculateBunnies(int bunnies);
 
 int main()
 {
-    int bunnies;
-    bool isEven = true;
-
     std::cout << "Number of ears all together: " << calculateBunnies(3) << std::endl;
 
     return 0;
 }
-
 
 int calculateBunnies(int bunnies)
 {
