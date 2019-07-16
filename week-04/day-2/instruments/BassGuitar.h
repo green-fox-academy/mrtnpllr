@@ -6,14 +6,12 @@
 class BassGuitar : public  StringedInstrument
 {
 public:
+
     BassGuitar();
 
     BassGuitar(int numberOfStrings);
 
-    void play();
-
-    void sound();
-
+    void sound() override;
 
 };
 

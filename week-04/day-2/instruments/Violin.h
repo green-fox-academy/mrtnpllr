@@ -3,17 +3,15 @@
 
 #include "StringedInstrument.h"
 
-class Violin : public  StringedInstrument
+class Violin : public StringedInstrument
 {
 public:
+
     Violin();
 
     Violin(int numberOfStrings);
 
-    void play();
-
-    void sound();
-
+    void sound() override;
 
 };
 

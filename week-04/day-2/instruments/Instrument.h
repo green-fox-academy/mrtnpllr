@@ -7,6 +7,8 @@
 class Instrument
 {
 public:
+    Instrument(const std::string &name);
+
     virtual void play() = 0;
 
 protected:
