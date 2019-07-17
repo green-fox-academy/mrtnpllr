@@ -9,7 +9,7 @@ bool isAnagram(std::string str1, std::string str2)
 
     int s1[256] = {0};
     int s2[256] = {0};
-    
+
     for (int i = 0; i < str1.length(); ++i) {
         s1[str1[i]]++;
         s2[str2[i]]++;

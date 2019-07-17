@@ -1,1 +1,1 @@
-add_library(${PROJECT_LIB_NAME} Apple.h Apple.cpp Anagram.h Anagram.cpp)
+add_library(${PROJECT_LIB_NAME} Apple.h Apple.cpp Anagram.h Anagram.cpp CountLetters.h CountLetters.cpp)
