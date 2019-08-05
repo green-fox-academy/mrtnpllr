@@ -24,6 +24,6 @@ int main()
     printf("%d multiplied by %d: %d\n", b, a, b * a);
     printf("%.0f divided by %.0f: %f\n", (float)b, (float)a, (float)a / (float)b);
     printf("%d modulo b %d: %d\n", b, a, a % b);
-    
+
     return 0;
 }
