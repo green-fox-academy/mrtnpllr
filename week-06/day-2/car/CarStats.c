@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "CarStats.h"
 
 void print_car_stats(car_t car)
@@ -16,6 +17,7 @@ void print_car_stats(car_t car)
             printf("KM of LAND_ROVER = %.02f\nGAS of LAND_ROVER = %.02f\n", car.km, car.gas);
             break;
         default :
+            printf("Invalid car type");
             break;
     }
 }

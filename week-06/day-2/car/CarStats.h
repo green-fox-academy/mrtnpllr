@@ -2,12 +2,17 @@
 #define CAR_CARSTATS_H
 
 
-#include <stdio.h>
+typedef enum car_type
+{
+    VOLVO,
+    TOYOTA,
+    LAND_ROVER,
+    TESLA
+} car_type_t;
 
-enum car_type {VOLVO, TOYOTA, LAND_ROVER, TESLA};
-
-typedef struct car {
-    enum car_type type;
+typedef struct car
+{
+    car_type_t type;
     double km;
     double gas;
 } car_t;

@@ -5,23 +5,15 @@
 
 int main()
 {
-    car_t car_one;
-    car_one.type = VOLVO;
-    car_one.gas = 200;
-    car_one.km = 1000;
+    car_t car_one = {.type = VOLVO, .km = 1500, .gas = 150};
 
-    car_t car_two;
-    car_two.type = TESLA;
-    car_two.km = 1200;
+    car_t car_two = {.type = TESLA,.km = 1200};
 
-    car_t car_three;
-    car_three.type = TOYOTA;
-    car_three.gas = 150;
-    car_three.km = 1100;
+    car_t car_three = {.type = TOYOTA, .km = 1150, .gas = 150};
 
     print_car_stats(car_one);
     print_car_stats(car_two);
     print_car_stats(car_three);
 
-	return 0;
+    return 0;
 }
