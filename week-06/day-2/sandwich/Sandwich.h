@@ -4,12 +4,12 @@
 
 typedef struct sandwich
 {
-    char *name;
+    char name[256];
     float price;
     float weight;
 } sandwich_t;
 
-int get_price(sandwich_t sandwich, int number_of_order);
+float get_price(sandwich_t sandwich, int number_of_order);
 
 
 #endif //SANDWICH_SANDWICH_H
