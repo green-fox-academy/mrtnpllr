@@ -32,5 +32,7 @@ int open_txt(char *path)
         line_counter++;
     }
 
+    fclose(open_file);
+
     return line_counter;
 }

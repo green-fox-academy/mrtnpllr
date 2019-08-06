@@ -39,5 +39,7 @@ bool write_lines(char *path, char *word, int num)
         fputs("\n", fileptr);
     }
 
+    fclose(fileptr);
+
     return TRUE;
 }

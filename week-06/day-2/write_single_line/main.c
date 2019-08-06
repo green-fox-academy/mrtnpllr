@@ -26,5 +26,7 @@ int write_txt_file(char *path)
 
     fputs(my_name, write);
 
+    fclose(write);
+
     return 1;
 }
