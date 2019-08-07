@@ -8,7 +8,7 @@
 
 int main()
 {
-    int* pointer = NULL;
+    int *pointer = NULL;
 
     pointer = (int *) malloc(10 * sizeof(int));
 
@@ -19,6 +19,8 @@ int main()
     for (int j = 0; j < 10; ++j) {
         printf("%d. value: %d\n", j, pointer[j]);
     }
+
+    free(pointer);
 
     return 0;
 }
