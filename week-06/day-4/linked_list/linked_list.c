@@ -54,6 +54,14 @@ int size(node_t** head)
     return number_of_nodes;
 }
 
+bool empty(node_t** head)
+{
+    if (*head == NULL)
+        return TRUE;
+    else
+        return FALSE;
+}
+
 void print(node_t *head)
 {
     int counter = 0;
@@ -61,5 +69,17 @@ void print(node_t *head)
         printf("Counter\tData\tPointer\n");
         printf("%d.\t %d\t%p\n", ++counter, head->data, head->next);
         head = head->next;
+    }
+}
+
+char* bool_alpha(int boolean)
+{
+    switch (boolean) {
+        case 0:
+            return "FALSE";
+        case 1:
+            return "TRUE";
+        default:
+            break;
     }
 }

@@ -2,6 +2,10 @@
 #define LINKED_LIST_LINKED_LIST_H
 
 
+#define bool int
+#define TRUE 1
+#define FALSE 0
+
 typedef struct node
 {
     int data;
@@ -18,7 +22,11 @@ void insert(node_t** head, int data, node_t* existing_node);
 
 int size(node_t** head);
 
+bool empty(node_t** head);
+
 void print(node_t *head);
+
+char* bool_alpha(int boolean);
 
 
 #endif
