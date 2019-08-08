@@ -62,6 +62,20 @@ bool empty(node_t** head)
         return FALSE;
 }
 
+/*Delete
+This function should take a head as a parameter.
+It should delete the first element of the specified list and return the new head of the list.
+*/
+
+node_t* delete(node_t** head)
+{
+    node_t* head_tmp = *head;
+    *head = head_tmp->next;
+    free(head_tmp);
+
+    return *head;
+}
+
 void print(node_t *head)
 {
     int counter = 0;

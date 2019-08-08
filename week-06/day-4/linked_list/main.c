@@ -44,6 +44,19 @@ int main() {
     printf("%s\n", bool_alpha(empty(&head2)));
     printf("%s\n", bool_alpha(empty(&head3)));
 
+    node_t* head4 = NULL;
+
+    push_back(&head4, 1);
+    push_back(&head4, 2);
+    push_back(&head4, 3);
+    push_back(&head4, 4);
+    push_back(&head4, 5);
+
+    print(head4);
+
+    delete(&head4);
+
+    print(head4);
 
     return 0;
 }

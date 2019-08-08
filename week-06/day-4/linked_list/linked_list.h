@@ -24,6 +24,8 @@ int size(node_t** head);
 
 bool empty(node_t** head);
 
+node_t* delete(node_t** head);
+
 void print(node_t *head);
 
 char* bool_alpha(int boolean);
