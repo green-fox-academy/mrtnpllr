@@ -34,7 +34,11 @@ bool empty(vector_t* vector);
 
 int search(vector_t* vector, int value);
 
-int shuffle(vector_t* vector);
+vector_t* shuffle(vector_t* vector);
+
+vector_t* sort(vector_t* vector);
+
+vector_t* unique(vector_t* vector);
 
 
 #endif //VECTOR_VECTOR_H

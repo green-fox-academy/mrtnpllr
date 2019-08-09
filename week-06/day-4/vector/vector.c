@@ -56,9 +56,6 @@ void insert(vector_t *vector, int element, int index)
     }
 }
 
-/*This function should take a vector and an index as parameters. It should delete the element at the specified index if that is valid.
-If the index is out of range it should return 0. If the deletion is successful it should return 1.*/
-
 bool delete(vector_t *vector, int index)
 {
     if (index > vector->size || index < 0) {
@@ -106,23 +103,46 @@ int search(vector_t *vector, int value)
     return -1;
 }
 
-/*It should randomly rearrange all the elements in the vector.
-
-*/
-
-int shuffle(vector_t* vector)
+vector_t *shuffle(vector_t *vector)
 {
+    int temp;
     for (int i = 0; i < vector->size; ++i) {
         int r = rand() % vector->size;
-        int temp = vector->element[r];
+        temp = vector->element[r];
         vector->element[r] = vector->element[i];
         vector->element[i] = temp;
     }
 
+    return vector;
+}
 
-    for (int l = 0; l < vector->size; ++l) {
-        printf("Random elements on index[%d]: %d\n", l, vector->element[l]);
+vector_t *sort(vector_t *vector)
+{
+    int temp;
+    for (int i = 0; i < vector->size - 1; i++) {
+        for (int j = 0; j < vector->size - i - 1; j++) {
+            if (vector->element[j] > vector->element[j + 1]) {
+                temp = vector->element[j];
+                vector->element[j] = vector->element[j + 1];
+                vector->element[j + 1] = temp;
+            }
+        }
     }
 
-    return 0;
+    return vector;
+}
+
+vector_t *unique(vector_t *vector)
+{
+    for (int i = 0; i < vector->size; ++i) {
+        for (int j = i + 1; j < vector->size; ++j) {
+                printf("value%d\tvalue%d\n", vector->element[i], vector->element[j]);
+            if (vector->element[i] == vector->element[j]) {
+                delete(vector, j);
+                j--;
+            }
+        }
+    }
+
+    return vector;
 }

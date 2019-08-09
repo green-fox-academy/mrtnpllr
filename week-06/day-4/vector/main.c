@@ -101,7 +101,7 @@ int main()
     printf("\n");
     printf("\n");*/
 
-    push_back(&new_vector3, 0);
+    /*push_back(&new_vector3, 0);
     push_back(&new_vector3, 1);
     push_back(&new_vector3, 2);
     push_back(&new_vector3, 3);
@@ -148,6 +148,47 @@ int main()
     printf("Search element 23: %d\n\n", search(&new_vector3, 23));
 
     shuffle(&new_vector3);
+
+    for (int j = 0; j < new_vector3.size; ++j) {
+        printf("Shuffled vector elements: %d\n", new_vector3.element[j]);
+    }
+
+    printf("\n");
+    printf("\n");
+    printf("\n");
+
+    sort(&new_vector3);
+
+    for (int j = 0; j < new_vector3.size; ++j) {
+        printf("Sorted vector elements: %d\n", new_vector3.element[j]);
+    }
+*/
+
+    vector_t check_unique_vector;
+    init(&check_unique_vector);
+
+    push_back(&check_unique_vector, 1);
+    push_back(&check_unique_vector, 1);
+    push_back(&check_unique_vector, 1);
+    push_back(&check_unique_vector, 1);
+    push_back(&check_unique_vector, 2);
+    push_back(&check_unique_vector, 5);
+    push_back(&check_unique_vector, 2);
+    push_back(&check_unique_vector, 6);
+    push_back(&check_unique_vector, 3);
+    push_back(&check_unique_vector, 7);
+    push_back(&check_unique_vector, 3);
+    push_back(&check_unique_vector, 3);
+    push_back(&check_unique_vector, 4);
+    push_back(&check_unique_vector, 9);
+    push_back(&check_unique_vector, 4);
+    push_back(&check_unique_vector, 4);
+
+    unique(&check_unique_vector);
+
+    for (int i = 0; i < check_unique_vector.size; ++i) {
+        printf("Elements after unique: %d\n",check_unique_vector.element[i]);
+    }
 
     return 0;
 }
