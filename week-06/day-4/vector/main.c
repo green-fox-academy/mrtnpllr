@@ -187,7 +187,7 @@ int main()
     unique(&check_unique_vector);
 
     for (int i = 0; i < check_unique_vector.size; ++i) {
-        printf("Elements after unique: %d\n",check_unique_vector.element[i]);
+        printf("Elements after unique: %d\n", check_unique_vector.element[i]);
     }
 
     return 0;

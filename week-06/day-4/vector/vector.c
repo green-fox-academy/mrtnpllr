@@ -136,7 +136,6 @@ vector_t *unique(vector_t *vector)
 {
     for (int i = 0; i < vector->size; ++i) {
         for (int j = i + 1; j < vector->size; ++j) {
-                printf("value%d\tvalue%d\n", vector->element[i], vector->element[j]);
             if (vector->element[i] == vector->element[j]) {
                 delete(vector, j);
                 j--;
