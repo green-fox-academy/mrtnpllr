@@ -1,3 +1,4 @@
+#include <SDL_log.h>
 #include "visualizer.h"
 
 vector_t construct_vector(generate_t generate)
@@ -20,6 +21,21 @@ vector_t construct_vector(generate_t generate)
         push_back(&my_vector, 500);
         push_back(&my_vector, 550);
         push_back(&my_vector, 600);
+        push_back(&my_vector, 80);
+        push_back(&my_vector, 324);
+        push_back(&my_vector, 34);
+        push_back(&my_vector, 565);
+        push_back(&my_vector, 345);
+        push_back(&my_vector, 74);
+        push_back(&my_vector, 234);
+        push_back(&my_vector, 65);
+        push_back(&my_vector, 86);
+        push_back(&my_vector, 123);
+        push_back(&my_vector, 251);
+        push_back(&my_vector, 100);
+        push_back(&my_vector, -1);
+        push_back(&my_vector, -1);
+        push_back(&my_vector, -1);
 
     } else if (generate == RANDOM) {
         for (int i = 0; i < 10; ++i) {
@@ -73,16 +89,19 @@ void draw_vector(SDL_Renderer *gRenderer, data_type_t data_type, vector_t *my_ve
     int rect_size = 50;
     int x_coordinate = 50;
     int y_coordinate = 0;
-    int R;
-    int G;
-    int B;
+    int R, G, B;
     int A = 1;
 
     if (data_type == CAPACITY) {
         SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, A);
         for (int i = 0; i < my_vector->capacity; ++i) {
-            SDL_Rect drawRect = {x_coordinate * i, y_coordinate, rect_size, rect_size};
-            SDL_RenderDrawRect(gRenderer, &drawRect);
+            if (my_vector->capacity * rect_size > 800) {
+                SDL_Rect drawRect = {(x_coordinate / 2) * i, y_coordinate / 2, rect_size / 2, rect_size / 2};
+                SDL_RenderDrawRect(gRenderer, &drawRect);
+            } else {
+                SDL_Rect drawRect = {x_coordinate * i, y_coordinate, rect_size, rect_size};
+                SDL_RenderDrawRect(gRenderer, &drawRect);
+            }
         }
     } else if (data_type == SIZE) {
         for (int i = 0; i < my_vector->size; ++i) {
@@ -90,9 +109,13 @@ void draw_vector(SDL_Renderer *gRenderer, data_type_t data_type, vector_t *my_ve
             G = set_color(my_vector->element[i], GREEN);
             B = set_color(my_vector->element[i], BLUE);
             SDL_SetRenderDrawColor(gRenderer, R, G, B, A);
-            SDL_Rect fillRect = {x_coordinate * i, y_coordinate, (rect_size - 1), (rect_size - 1)};
-            SDL_RenderFillRect(gRenderer, &fillRect);
-
+            if (my_vector->capacity * rect_size > 800) {
+                SDL_Rect fillRect = {(x_coordinate / 2) * i, y_coordinate / 2, (rect_size - 1) / 2, (rect_size - 1) / 2};
+                SDL_RenderFillRect(gRenderer, &fillRect);
+            } else {
+                SDL_Rect fillRect = {x_coordinate * i, y_coordinate, (rect_size - 1), (rect_size - 1)};
+                SDL_RenderFillRect(gRenderer, &fillRect);
+            }
         }
     }
 }

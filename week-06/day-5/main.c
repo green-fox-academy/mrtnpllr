@@ -22,7 +22,7 @@ int main(int argc, char *args[])
 
     //Init vector
     srand(time(NULL));
-    vector_t new_vector = construct_vector(RANDOM);
+    vector_t new_vector = construct_vector(NORMAL);
 
     //Start up SDL and create window
     if (!init()) {
