@@ -81,6 +81,9 @@ int main(void)
   GPIOF->MODER |= 0b01010101 << 14;
   GPIOF->ODR = 0b0000000010000000;
 
+  GPIOC->MODER = 0;
+
+
   //GPIOI->MODER |= 0x00000004;
   //GPIOI->MODER |= 0x00000004;
 
@@ -107,6 +110,8 @@ int main(void)
     /* USER CODE END WHILE */
 	  //GPIOF->ODR = 0b0000000001000000;
 
+
+	  /*
 	  for (int i = 0; i < 3; ++i) {
 		  GPIOF->ODR <<= 1;
 		  HAL_Delay(50);
@@ -117,6 +122,20 @@ int main(void)
 		  HAL_Delay(50);
 
 	  	}
+	  */
+
+	  if ((GPIOC->IDR >> 7) & 1) {
+		  for (int i = 0; i < 3; ++i) {
+				  GPIOF->ODR <<= 1;
+				  HAL_Delay(50);
+			  }
+
+			  for (int j = 0; j < 3; ++j) {
+				  GPIOF->ODR >>= 1;
+				  HAL_Delay(50);
+
+			  	}
+	  }
 
     /* USER CODE BEGIN 3 */
   }
