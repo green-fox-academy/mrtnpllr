@@ -109,12 +109,12 @@ int main(void)
 
 	  for (int i = 0; i < 3; ++i) {
 		  GPIOF->ODR <<= 1;
-		  HAL_Delay(200);
+		  HAL_Delay(50);
 	  }
 
 	  for (int j = 0; j < 3; ++j) {
 		  GPIOF->ODR >>= 1;
-		  HAL_Delay(200);
+		  HAL_Delay(50);
 
 	  	}
 
