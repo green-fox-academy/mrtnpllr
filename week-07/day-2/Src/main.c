@@ -78,8 +78,8 @@ int main(void)
   /* USER CODE BEGIN Init */
 
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOIEN | 0b100000;
-  //GPIOF->MODER &= 0xFFFF0FFF;
   GPIOF->MODER |= 0b01010101 << 14;
+  GPIOF->ODR = 0b0000000010000000;
 
   //GPIOI->MODER |= 0x00000004;
   //GPIOI->MODER |= 0x00000004;
@@ -105,13 +105,19 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  //GPIOF->ODR = 0b0000011110000000;
-	  GPIOF->ODR = 0b0000000001000000;
+	  //GPIOF->ODR = 0b0000000001000000;
 
-	  for (int i = 0; i < 4; ++i) {
+	  for (int i = 0; i < 3; ++i) {
 		  GPIOF->ODR <<= 1;
 		  HAL_Delay(200);
 	  }
+
+	  for (int j = 0; j < 3; ++j) {
+		  GPIOF->ODR >>= 1;
+		  HAL_Delay(200);
+
+	  	}
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
