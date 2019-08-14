@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+    <FileVersion>2.0</FileVersion> 
+
+    <ProjectPath>C:\Users\yello\Desktop\GreenFox\mrtnpllr\week-07\day-3\second_project\</ProjectPath> 
+
+    <ProjectName>binary_counter</ProjectName>     <ProjectNature>C</ProjectNature> 
+
+    <HAL_Driver>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0</HAL_Driver>
+    <CMSIS>Drivers/CMSIS</CMSIS> 
+    <Toolchain>STM32CubeIDE</Toolchain>
+    <Version>0</Version>
+
+    <configs>
+<config>
+    <name>binary_counter</name>	 
+    <device>STM32F746NGHx</device>		 
+    <cpucore>Arm Cortex-M7</cpucore>    
+    <fpu>SP</fpu>  
+    <memories>   
+        <memory name="RAM" access="xrw" start="0x20000000" size="320" />
+        <memory name="FLASH" access="rx" start="0x8000000" size="1024" />
+        </memories>
+    <startup>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers\CMSIS\Device\ST\STM32F7xx\Source\Templates\gcc\startup_stm32f746xx.s</startup>      
+
+    <heapSize>0x200</heapSize>
+    <stackSize>0x400</stackSize>
+
+    <board>STM32F746G-DISCO</board>
+
+    <debugprobe>swd</debugprobe>
+    <optimization></optimization>
+
+    <Aincludes>
+        <include></include>
+
+        </Aincludes>
+    <Adefines>
+        </Adefines>  
+    <Cdefines>
+        <define>USE_HAL_DRIVER</define>
+        <define>STM32F746xx</define>
+        <define>USE_HAL_DRIVER</define>
+        <define>STM32F746xx</define>
+        </Cdefines>
+    <Ldefines>
+        </Ldefines>
+    <definestoremove>
+        <Adefines>
+            </Adefines>
+        <Cdefines>
+            <define>USE_FULL_LL_DRIVER</define>
+            <define>MBEDTLS_CONFIG_FILE=&quot;mbedtls_config.h&quot;</define>
+            <define>USE_FULL_ASSERT=1U</define>
+            </Cdefines> 
+        <Ldefines>
+            </Ldefines> 
+        </definestoremove>
+
+    <inctoremove>
+        <Aincludes>
+            <include></include>
+            </Aincludes>
+        <Cincludes>
+            </Cincludes>
+        </inctoremove>
+    <filestoremove>
+        <file>
+            </file>
+        </filestoremove>
+    <Cincludes>
+        <include>Inc</include>
+        <include>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers\STM32F7xx_HAL_Driver\Inc</include>
+        <include>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers\STM32F7xx_HAL_Driver\Inc\Legacy</include>
+        <include>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers\CMSIS\Device\ST\STM32F7xx\Include</include>
+        <include>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers\CMSIS\Include</include>
+
+        </Cincludes>
+    </config>
+        </configs> 
+
+    <underRoot>true</underRoot>
+    <copyAsReference>true</copyAsReference>
+    <sourceEntries>
+        <sourceEntry>
+            <name>Src</name>
+        </sourceEntry>
+        <sourceEntry>
+	<name>Drivers</name>
+    	</sourceEntry>
+
+        </sourceEntries>
+    <group>
+        <name>Drivers</name> 
+        <group>
+            <name>STM32F7xx_HAL_Driver</name>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c</name>
+                </file>
+            <file>
+                <name>C:\Users\yello\STM32Cube\Repository\STM32Cube_FW_F7_V1.15.0\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c</name>
+                </file>
+            </group>		    
+        </group>   
+     
+    </Project>
+

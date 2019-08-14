@@ -67,7 +67,8 @@ void Error_Handler(void);
 #define SECOND_LED_Pin GPIO_PIN_8
 #define SECOND_LED_GPIO_Port GPIOF
 /* USER CODE BEGIN Private defines */
-
+#define BUTTON_Pin GPIO_PIN_7
+#define BUTTON_GPIO_Port GPIOC
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

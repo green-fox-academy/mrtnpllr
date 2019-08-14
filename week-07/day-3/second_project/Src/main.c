@@ -44,7 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint32_t ODR_state_start = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,32 +96,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
     /* USER CODE END WHILE */
-	  for (GPIOF->ODR = 0b10000000; GPIOF->ODR <= 0b11110000000; GPIOF->ODR = GPIOF->ODR + (1 << 7)) {
-		  HAL_Delay(1000);
+	  GPIOF->ODR = ODR_state_start << 7;
+
+	  if (HAL_GPIO_ReadPin(BUTTON_GPIO_Port, BUTTON_Pin)) {
+		  HAL_Delay(500);
+		  ODR_state_start++;
 	  }
-/*
-	  0001 0000000
-	  0001 0000001
-	  0001 0000010
-	  0001 0000011
-	  0001 0000100
-	  0001 0000101
-	  0001 0000110
-	  .... .......
-	  0001 1111111
-	  0010 0000000
-	  0001 0000000
-	  0001 0000000
-	  0001 0000000
-	  0001 0000000
-	  0001 0000000
-	  0001 0000000
-	*/
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
+
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -185,6 +173,12 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOF, FIRST_LED_Pin|FORTH_LED_Pin|THIRD_LED_Pin|SECOND_LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PC7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : FIRST_LED_Pin FORTH_LED_Pin THIRD_LED_Pin SECOND_LED_Pin */
   GPIO_InitStruct.Pin = FIRST_LED_Pin|FORTH_LED_Pin|THIRD_LED_Pin|SECOND_LED_Pin;
