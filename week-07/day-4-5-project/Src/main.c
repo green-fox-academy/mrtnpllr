@@ -192,8 +192,15 @@ void test_random_generator(void) {
 void start_single_player_game(void) {
 	random = generate_random_number() * 1000;
 	HAL_Delay(random);
-	HAL_GPIO_WritePin(GAME_STATE_LED_GPIO_Port, GAME_STATE_LED_Pin, 1);
-	player_one_timer_start = HAL_GetTick();
+	if(game_state == FINISHED) {
+		return;
+	} else if(game_state == STARTED) {
+		HAL_GPIO_WritePin(GAME_STATE_LED_GPIO_Port, GAME_STATE_LED_Pin, 1);
+		player_one_timer_start = HAL_GetTick();
+		game_state = REACTION;
+	}
+	//HAL_GPIO_WritePin(GAME_STATE_LED_GPIO_Port, GAME_STATE_LED_Pin, 1);
+	//player_one_timer_start = HAL_GetTick();
 }
 
 int measure_player_one_reaction(void) {
@@ -270,9 +277,9 @@ int main(void)
 	  } else if(game_state == STARTED) {
 		  blink_game_state_led(STARTED);
 		  start_single_player_game();
-		  game_state = REACTION;
+		  //game_state = REACTION;
 	  } else if(game_state == REACTION) {
-		  game_state = FINISHED;
+
 	  } else if(game_state == FINISHED) {
 		  HAL_Delay(3000);
 		  HAL_GPIO_WritePin(RGB_RED_GPIO_Port, RGB_RED_Pin, INVERTED_OFF);
@@ -1690,6 +1697,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if(GPIO_Pin == PLAYER_ONE_BTN_Pin) {
 		if(game_state == STARTED) {
 			HAL_GPIO_WritePin(RGB_RED_GPIO_Port, RGB_RED_Pin, INVERTED_ON);
+			player_one_reaction = 0;
 			game_state = FINISHED;
 			round_counter++;
 		} else if(game_state == REACTION) {
