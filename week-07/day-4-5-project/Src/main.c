@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32746g_discovery_lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,7 +36,9 @@ typedef enum rgb_led_state {
 
 typedef enum game_state {
 	WAITING,
-	STARTED
+	STARTED,
+	REACTION,
+	FINISHED
 } game_state_t;
 /* USER CODE END PTD */
 
@@ -96,8 +98,13 @@ SDRAM_HandleTypeDef hsdram1;
 
 /* USER CODE BEGIN PV */
 bool has_game_started = FALSE;
+game_state_t game_state= WAITING;
 unsigned int random;
-int counter = 0;
+int random_counter = 0;
+int round_counter = 0;
+uint32_t player_one_timer_start;
+uint32_t player_one_timer_end;
+uint32_t player_one_reaction;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -132,8 +139,10 @@ void MX_USB_HOST_Process(void);
 void check_buttons(void);
 void check_rgb_leds();
 void blink_game_state_led(game_state_t state);
-void start_single_player_game(void);
 int generate_random_number(void);
+void test_random_generator(void);
+void start_single_player_game(void);
+int measure_player_one_reaction(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -142,7 +151,7 @@ void check_buttons(void) {
 	HAL_GPIO_TogglePin(GAME_STATE_LED_GPIO_Port, GAME_STATE_LED_Pin);
 }
 
-void check_rgb_leds() {
+void check_rgb_leds(void) {
 	HAL_GPIO_WritePin(RGB_RED_GPIO_Port, RGB_RED_Pin, INVERTED_ON);
 	HAL_Delay(1000);
 	HAL_GPIO_WritePin(RGB_RED_GPIO_Port, RGB_RED_Pin, INVERTED_OFF);
@@ -159,9 +168,9 @@ void blink_game_state_led(game_state_t state) {
 	switch (state) {
 	case WAITING:
 		HAL_GPIO_WritePin(GAME_STATE_LED_GPIO_Port, GAME_STATE_LED_Pin, 1);
-		HAL_Delay(1000);
+		HAL_Delay(500);
 		HAL_GPIO_WritePin(GAME_STATE_LED_GPIO_Port, GAME_STATE_LED_Pin, 0);
-		HAL_Delay(1000);
+		HAL_Delay(500);
 	case STARTED:
 		HAL_GPIO_WritePin(GAME_STATE_LED_GPIO_Port, GAME_STATE_LED_Pin, 0);
 	default:
@@ -169,14 +178,27 @@ void blink_game_state_led(game_state_t state) {
 	}
 }
 
-void start_single_player_game(void) {
-
-	has_game_started = TRUE;
-}
-
 int generate_random_number(void) {
 	unsigned int rand = HAL_RNG_GetRandomNumber(&hrng);
-	return rand;
+	return rand % 10;
+}
+
+void test_random_generator(void) {
+	random_counter++;
+	random = generate_random_number();
+	HAL_Delay(1000);
+}
+
+void start_single_player_game(void) {
+	random = generate_random_number() * 1000;
+	HAL_Delay(random);
+	HAL_GPIO_WritePin(GAME_STATE_LED_GPIO_Port, GAME_STATE_LED_Pin, 1);
+	player_one_timer_start = HAL_GetTick();
+}
+
+int measure_player_one_reaction(void) {
+	int start_timer = HAL_GetTick();
+	return player_one_reaction = HAL_GetTick() - start_timer;
 }
 /* USER CODE END 0 */
 
@@ -209,9 +231,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC3_Init();
-  MX_CRC_Init();
-  MX_DCMI_Init();
   MX_DMA2D_Init();
   MX_FMC_Init();
   MX_I2C1_Init();
@@ -231,23 +250,35 @@ int main(void)
   MX_USART1_UART_Init();
   MX_RNG_Init();
   /* USER CODE BEGIN 2 */
-
+  BSP_LCD_Init();
+  BSP_LCD_LayerDefaultInit(1, LCD_FB_START_ADDRESS);
+  BSP_LCD_SelectLayer(1);
+  BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
+  //BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (has_game_started == FALSE) {
-		  blink_game_state_led(WAITING);
-	  } else if (has_game_started == TRUE) {
-		  blink_game_state_led(STARTED);
-	  }
+	  BSP_LCD_DisplayStringAtLine(1, "Hello Embedded world");
 
-	  HAL_Delay(1000);
-	  counter++;
-	  random = generate_random_number() % 10;
-	  HAL_Delay(1000);
+	  if(game_state == WAITING) {
+		  blink_game_state_led(WAITING);
+	  } else if(game_state == STARTED) {
+		  blink_game_state_led(STARTED);
+		  start_single_player_game();
+		  game_state = REACTION;
+	  } else if(game_state == REACTION) {
+		  game_state = FINISHED;
+	  } else if(game_state == FINISHED) {
+		  HAL_Delay(3000);
+		  HAL_GPIO_WritePin(RGB_RED_GPIO_Port, RGB_RED_Pin, INVERTED_OFF);
+		  HAL_GPIO_WritePin(RGB_GREEN_GPIO_Port, RGB_GREEN_Pin, INVERTED_OFF);
+		  game_state = WAITING;
+	  }
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
 
@@ -900,7 +931,7 @@ static void MX_SAI2_Init(void)
   hsai_BlockB2.Init.MonoStereoMode = SAI_STEREOMODE;
   hsai_BlockB2.Init.CompandingMode = SAI_NOCOMPANDING;
   hsai_BlockB2.Init.TriState = SAI_OUTPUT_NOTRELEASED;
-  hsai_BlockB2.FrameInit.FrameLength = 24;
+  hsai_BlockB2.FrameInit.FrameLength = 8;
   hsai_BlockB2.FrameInit.ActiveFrameLength = 1;
   hsai_BlockB2.FrameInit.FSDefinition = SAI_FS_STARTFRAME;
   hsai_BlockB2.FrameInit.FSPolarity = SAI_FS_ACTIVE_LOW;
@@ -1641,10 +1672,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
@@ -1652,8 +1683,22 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
-	if (GPIO_Pin == START_GAME_BTN_Pin) {
-		has_game_started = TRUE;
+	if(GPIO_Pin == START_GAME_BTN_Pin && game_state == WAITING) {
+		game_state = STARTED;
+	}
+
+	if(GPIO_Pin == PLAYER_ONE_BTN_Pin) {
+		if(game_state == STARTED) {
+			HAL_GPIO_WritePin(RGB_RED_GPIO_Port, RGB_RED_Pin, INVERTED_ON);
+			game_state = FINISHED;
+			round_counter++;
+		} else if(game_state == REACTION) {
+			player_one_timer_end = HAL_GetTick();
+			player_one_reaction = player_one_timer_end - player_one_timer_start;
+			HAL_GPIO_WritePin(RGB_GREEN_GPIO_Port, RGB_GREEN_Pin, INVERTED_ON);
+			game_state = FINISHED;
+			round_counter++;
+		}
 	}
 }
 /* USER CODE END 4 */
