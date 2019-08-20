@@ -213,7 +213,11 @@ void print_player_stats(void) {
 	char tmp[256];
 	int i = 1;
 	for(; i <= round_counter; ++i) {
-		sprintf(tmp, "Round %d: %d", i, player_one_reaction);
+		if(player_one_reaction == 0) {
+			sprintf(tmp, "Round %d: invalid", i);
+		} else {
+			sprintf(tmp, "Round %d: %d", i, player_one_reaction);
+		}
 	}
 	BSP_LCD_DisplayStringAtLine(i, tmp);
 
