@@ -143,6 +143,7 @@ int generate_random_number(void);
 void test_random_generator(void);
 void start_single_player_game(void);
 int measure_player_one_reaction(void);
+void print_player_stats(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -207,6 +208,16 @@ int measure_player_one_reaction(void) {
 	int start_timer = HAL_GetTick();
 	return player_one_reaction = HAL_GetTick() - start_timer;
 }
+
+void print_player_stats(void) {
+	char tmp[256];
+	int i = 1;
+	for(; i <= round_counter; ++i) {
+		sprintf(tmp, "Round %d: %d", i, player_one_reaction);
+	}
+	BSP_LCD_DisplayStringAtLine(i, tmp);
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -270,8 +281,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  BSP_LCD_DisplayStringAtLine(1, "Hello Embedded world");
-
 	  if(game_state == WAITING) {
 		  blink_game_state_led(WAITING);
 	  } else if(game_state == STARTED) {
@@ -284,6 +293,7 @@ int main(void)
 		  HAL_Delay(3000);
 		  HAL_GPIO_WritePin(RGB_RED_GPIO_Port, RGB_RED_Pin, INVERTED_OFF);
 		  HAL_GPIO_WritePin(RGB_GREEN_GPIO_Port, RGB_GREEN_Pin, INVERTED_OFF);
+		  print_player_stats();
 		  game_state = WAITING;
 	  }
     /* USER CODE END WHILE */
