@@ -201,6 +201,10 @@ local.properties
 
 .sts4-cache/
 
+#ceedling
+build/
+Debug/
+
 # End of https://www.gitignore.io/api/eclipse
 
 # End of https://www.gitignore.io/api/c++,clion,visualstudiocodie
