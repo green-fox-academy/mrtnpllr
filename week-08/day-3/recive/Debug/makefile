@@ -24,21 +24,21 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-led_blinking.elf \
+receive.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-led_blinking.list \
+receive.list \
 
 
 # All Target
-all: led_blinking.elf secondary-outputs
+all: receive.elf secondary-outputs
 
 # Tool invocations
-led_blinking.elf: $(OBJS) $(USER_OBJS) C:\Users\yello\Desktop\GreenFox\mrtnpllr\week-08\day-1\led_blinking\STM32F746NGHX_FLASH.ld
-	arm-none-eabi-gcc -o "led_blinking.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\yello\Desktop\GreenFox\mrtnpllr\week-08\day-1\led_blinking\STM32F746NGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="led_blinking.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+receive.elf: $(OBJS) $(USER_OBJS) C:\Users\yello\Desktop\GreenFox\mrtnpllr\week-08\day-3\recive\STM32F746NGHX_FLASH.ld
+	arm-none-eabi-gcc -o "receive.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\yello\Desktop\GreenFox\mrtnpllr\week-08\day-3\recive\STM32F746NGHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="receive.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -47,8 +47,8 @@ default.size.stdout: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-led_blinking.list: $(EXECUTABLES)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "led_blinking.list"
+receive.list: $(EXECUTABLES)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "receive.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
