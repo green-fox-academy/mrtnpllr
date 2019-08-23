@@ -48,13 +48,16 @@
 
 /* USER CODE BEGIN PV */
 int check_system = 0;
-char buffer_bela[3];
+char buffer_bela;
+char my_variable[256];
+int counter = 0;
+int should_print = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void recive_data(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -95,21 +98,26 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim5);
-
+  HAL_UART_Receive_IT(&huart1, (uint8_t*)(&buffer_bela), 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  //Previous solution
+	  /*
 	  HAL_UART_Receive(&huart1, (uint8_t*)&buffer_bela, 1, 1000);
-	  /*char tmp[100] = "Hello bela\r\n";
-	  HAL_UART_Transmit(&huart1, tmp, strlen(tmp), 1000);
-	  HAL_Delay(1000);*/
 	  buffer_bela[1] = '\r';
 	  buffer_bela[2] = '\n';
 	  buffer_bela[3] = '\0';
 	  HAL_UART_Transmit(&huart1, (uint8_t*)&buffer_bela, strlen(buffer_bela), 1000);
+	  */
+
+	  if(should_print) {
+		  HAL_UART_Transmit_IT(&huart1, (uint8_t*)my_variable, strlen(my_variable));
+		  should_print = 0;
+	  }
 
     /* USER CODE END WHILE */
 
@@ -172,6 +180,22 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	if(huart->Instance == USART1) {
+		//HAL_UART_Receive_IT(&huart1, (uint8_t*)(&buffer_bela), 1);
+		//if(buffer_bela == )
+		my_variable[counter] = buffer_bela;
+		if(buffer_bela != '\n') {
+			counter++;
+		} else {
+			should_print = 1;
+			my_variable[counter + 1] = '\0';
+			counter = 0;
+		}
+
+		HAL_UART_Receive_IT(&huart1, (uint8_t*)(&buffer_bela), 1);
+	}
+}
 
 /* USER CODE END 4 */
 
