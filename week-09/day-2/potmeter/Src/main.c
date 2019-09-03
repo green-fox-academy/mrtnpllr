@@ -48,6 +48,7 @@
 
 /* USER CODE BEGIN PV */
 uint16_t adc_value;
+uint16_t change_timer5_period;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -56,6 +57,7 @@ void SystemClock_Config(void);
 void dim_led(void);
 void dim_led_with_potmeter(void);
 uint16_t read_potmeter(void);
+void flash_green_led(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -81,12 +83,21 @@ uint16_t read_potmeter(void){
 		  adc_value = HAL_ADC_GetValue(&hadc3);
 	  }
 
+	  change_timer5_period = 5000 - (int)((float)4500 / 4096 * adc_value);
+	  TIM9->ARR = change_timer5_period;
+
 	  return adc_value;
 }
 
 void dim_led_with_potmeter(void)
 {
 	TIM12->CCR1 = adc_value;
+}
+
+void flash_green_led(void)
+{
+
+	HAL_GPIO_WritePin( GREEN_LED_GPIO_Port,  GREEN_LED_Pin, 1);
 }
 /* USER CODE END 0 */
 
@@ -121,8 +132,11 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC3_Init();
   MX_TIM12_Init();
+  MX_TIM5_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
+  HAL_TIM_Base_Start_IT(&htim9);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -132,6 +146,8 @@ int main(void)
 	  //dim_led();
 	  read_potmeter();
 	  dim_led_with_potmeter();
+	  //HAL_Delay(50);
+	  //flash_green_led();
 
     /* USER CODE END WHILE */
 
@@ -207,6 +223,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
+  if(htim->Instance == TIM9) {
+
+	  HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port,  GREEN_LED_Pin);
+  }
+
 
   /* USER CODE END Callback 1 */
 }
