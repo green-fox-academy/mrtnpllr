@@ -49,6 +49,7 @@ I2C_HandleTypeDef hi2c1;
 
 osThreadId defaultTaskHandle;
 osThreadId ControlLEDMHandle;
+osThreadId MoveDotHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -59,6 +60,7 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 void StartDefaultTask(void const * argument);
 void StartControlLEDM(void const * argument);
+void StartMoveDot(void const * argument);
 
 /* USER CODE BEGIN PFP */
 void clear_led_matrix();
@@ -82,9 +84,9 @@ void set_led_matrix(const uint8_t* data){
 	clear_led_matrix();
 	uint8_t buff[2];
 
-	for(int i=0; i<8; i++)
+	for(int i = 0; i < 8; i++)
 	{
-		  buff[0] = i*2;
+		  buff[0] = i * 2;
 		  buff[1] = (data[i] >> 1) | (data[i] << 7);
 		  HAL_I2C_Master_Transmit(&hi2c1, I2C_ADDRESS_LEDMATRIX, buff, 2, 100);
 	}
@@ -160,6 +162,10 @@ int main(void)
   /* definition and creation of ControlLEDM */
   osThreadDef(ControlLEDM, StartControlLEDM, osPriorityNormal, 0, 256);
   ControlLEDMHandle = osThreadCreate(osThread(ControlLEDM), NULL);
+
+  /* definition and creation of MoveDot */
+  osThreadDef(MoveDot, StartMoveDot, osPriorityNormal, 0, 256);
+  MoveDotHandle = osThreadCreate(osThread(MoveDot), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -313,6 +319,7 @@ void StartDefaultTask(void const * argument)
     
     
     
+    
 
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
@@ -335,13 +342,44 @@ void StartControlLEDM(void const * argument)
   /* USER CODE BEGIN StartControlLEDM */
   /* Infinite loop */
   for(;;)
-  {	  const uint8_t data[] = { 0x30, 0x66, 0xc6, 0x80, 0x80, 0xc6, 0x66, 0x30 };
-	  set_led_matrix(data);
-  	  osDelay(500);
-  	  clear_led_matrix();
-  	  osDelay(500);
+  {	  //const uint8_t data[] = { 0x30, 0x66, 0xc6, 0x80, 0x80, 0xc6, 0x66, 0x30 };
+  	  uint8_t dot_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  	  uint8_t display_size = 8;
+  	  for(int i = 0; i < display_size; ++i){
+  		  dot_display[i] = 0x08;
+  		  if(i > 0 && i < 8){
+  			  dot_display[i - 1] = 0x00;
+  		  }
+  		  set_led_matrix(dot_display);
+  		  osDelay(500);
+  	  }
+	  //set_led_matrix(dot_display);
+  	  //osDelay(500);
+  	  osThreadSuspend(NULL);
+  	  //clear_led_matrix();
+  	  //osDelay(500);
       }
   /* USER CODE END StartControlLEDM */
+}
+
+/* USER CODE BEGIN Header_StartMoveDot */
+/**
+* @brief Function implementing the MoveDot thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartMoveDot */
+void StartMoveDot(void const * argument)
+{
+  /* USER CODE BEGIN StartMoveDot */
+  /* Infinite loop */
+  for(;;)
+  {
+
+	osDelay(500);
+	osThreadResume(ControlLEDMHandle);
+  }
+  /* USER CODE END StartMoveDot */
 }
 
 /**
