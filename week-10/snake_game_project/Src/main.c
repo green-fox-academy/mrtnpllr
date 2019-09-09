@@ -50,8 +50,25 @@ I2C_HandleTypeDef hi2c1;
 osThreadId defaultTaskHandle;
 osThreadId ControlLEDMHandle;
 osThreadId MoveDotHandle;
+osMutexId displayMutexHandle;
 /* USER CODE BEGIN PV */
+uint8_t display_size = 8;
+uint8_t dot_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+uint8_t snake_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+uint8_t snake_x_coordinate = 0x00;
+uint8_t snake_y_coordinate = 0x00;
 
+typedef enum direction{
+	DEFAULT,
+	UP,
+	DOWN,
+	RIGHT,
+	LEFT
+}direction_t;
+
+direction_t direction = DEFAULT;
+//button debounce
+prev_start_time_down_btn = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,6 +82,7 @@ void StartMoveDot(void const * argument);
 /* USER CODE BEGIN PFP */
 void clear_led_matrix();
 void set_led_matrix(const uint8_t* data);
+void set_snake_direction(direction_t direction);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -89,6 +107,27 @@ void set_led_matrix(const uint8_t* data){
 		  buff[0] = i * 2;
 		  buff[1] = (data[i] >> 1) | (data[i] << 7);
 		  HAL_I2C_Master_Transmit(&hi2c1, I2C_ADDRESS_LEDMATRIX, buff, 2, 100);
+	}
+}
+
+void set_snake_direction(direction_t direction)
+{
+	switch(direction){
+	case DEFAULT:
+		snake_x_coordinate = 0x80;
+		snake_y_coordinate = 0x00;
+		break;
+	case UP:
+		break;
+	case DOWN:
+		snake_x_coordinate /= 2;
+		break;
+	case RIGHT:
+		break;
+	case LEFT:
+		break;
+	default:
+		break;
 	}
 }
 /* USER CODE END 0 */
@@ -138,6 +177,11 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  /* Create the mutex(es) */
+  /* definition and creation of displayMutex */
+  osMutexDef(displayMutex);
+  displayMutexHandle = osMutexCreate(osMutex(displayMutex));
+
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -160,7 +204,7 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of ControlLEDM */
-  osThreadDef(ControlLEDM, StartControlLEDM, osPriorityNormal, 0, 256);
+  osThreadDef(ControlLEDM, StartControlLEDM, osPriorityAboveNormal, 0, 256);
   ControlLEDMHandle = osThreadCreate(osThread(ControlLEDM), NULL);
 
   /* definition and creation of MoveDot */
@@ -293,6 +337,7 @@ static void MX_I2C1_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -300,10 +345,30 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
 
+  /*Configure GPIO pin : DOWN_BTN_Pin */
+  GPIO_InitStruct.Pin = DOWN_BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(DOWN_BTN_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
+HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if(GPIO_Pin == DOWN_BTN_Pin){
+		    if (HAL_GetTick() - 300 < prev_start_time_down_btn) {
+		      return;
+		    }
+		    prev_start_time_down_btn = HAL_GetTick();
 
+		    direction = DOWN;
+		}
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -342,22 +407,11 @@ void StartControlLEDM(void const * argument)
   /* USER CODE BEGIN StartControlLEDM */
   /* Infinite loop */
   for(;;)
-  {	  //const uint8_t data[] = { 0x30, 0x66, 0xc6, 0x80, 0x80, 0xc6, 0x66, 0x30 };
-  	  uint8_t dot_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-  	  uint8_t display_size = 8;
-  	  for(int i = 0; i < display_size; ++i){
-  		  dot_display[i] = 0x08;
-  		  if(i > 0 && i < 8){
-  			  dot_display[i - 1] = 0x00;
-  		  }
-  		  set_led_matrix(dot_display);
-  		  osDelay(500);
-  	  }
-	  //set_led_matrix(dot_display);
-  	  //osDelay(500);
+  {
+  	  set_led_matrix(snake_display);
+  	  osDelay(500);
+  	  osThreadResume(MoveDotHandle);
   	  osThreadSuspend(NULL);
-  	  //clear_led_matrix();
-  	  //osDelay(500);
       }
   /* USER CODE END StartControlLEDM */
 }
@@ -376,8 +430,35 @@ void StartMoveDot(void const * argument)
   for(;;)
   {
 
-	osDelay(500);
-	osThreadResume(ControlLEDMHandle);
+	  //set_snake_direction(direction);
+
+	  //set_snake_direction(DOWN);
+	  for(int i = 0; i <= display_size; ++i){
+		 // osMutexWait(displayMutexHandle, osWaitForever);
+		  set_snake_direction(direction);
+		  snake_display[i] = snake_x_coordinate;
+		  if(i > 0 && i < 8){
+			  snake_display[i - 1] = 0x00;
+		  }else if(i == display_size){
+  			  dot_display[i] = 0x00;
+  		  }
+		 // osMutexRelease(displayMutexHandle);
+		  osThreadResume(ControlLEDMHandle);
+		  osThreadSuspend(NULL);
+	  }
+	  /*
+  	  for(int i = 0; i <= display_size; ++i){
+  		  dot_display[i] = 0x08;
+  		  if(i > 0 && i < 8){
+  			  dot_display[i - 1] = 0x00;
+
+  		  }else if(i == display_size - 1){
+  			  dot_display[i] = 0x00;
+  		  }
+  		osThreadResume(ControlLEDMHandle);
+    	//osDelay(500);
+    	osThreadSuspend(NULL);
+  	  }*/
   }
   /* USER CODE END StartMoveDot */
 }
