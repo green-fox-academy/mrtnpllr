@@ -36,6 +36,7 @@
 /* USER CODE BEGIN PD */
 //                7 bit address: 1110xxx
 #define I2C_ADDRESS_LEDMATRIX (0b11100000)
+#define bool int
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -54,8 +55,16 @@ osMutexId displayMutexHandle;
 /* USER CODE BEGIN PV */
 uint8_t display_size = 8;
 //uint8_t snake_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-uint8_t snake_x_coordinate = 0x00;
-uint8_t snake_y_coordinate = 0x00;
+int snake_x_coordinate = 0;
+int snake_y_coordinate = 0;
+
+typedef enum game_state{
+	INIT,
+	START,
+	GAME_OVER
+}game_state_t;
+
+game_state_t game_state = INIT;
 
 typedef enum direction{
 	DEFAULT,
@@ -65,9 +74,13 @@ typedef enum direction{
 	LEFT
 }direction_t;
 
-direction_t direction = DEFAULT;
+direction_t direction = UP;
 //button debounce
 int prev_start_time_down_btn = 0;
+int prev_start_time_up_btn = 0;
+int prev_start_time_right_btn = 0;
+int prev_start_time_left_btn = 0;
+int prev_start_time_game_start_btn = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,6 +96,7 @@ void clear_led_matrix();
 void set_led_matrix(const uint8_t* data);
 void set_snake_direction(direction_t direction);
 void convert_snake_coordinates(uint8_t* array);
+bool check_game_over(int x, int y);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -113,21 +127,20 @@ void set_led_matrix(const uint8_t* data){
 void set_snake_direction(direction_t direction)
 {
 	switch(direction){
-	case DEFAULT:
-		if(snake_x_coordinate <= display_size && snake_x_coordinate >= 0)
+	/*case DEFAULT:
+		if(snake_x_coordinate < display_size && snake_x_coordinate >= 0)
 		snake_x_coordinate += 1;
-		//snake_y_coordinate = 0;
-		break;
+		break;*/
 	case UP:
-		if(snake_y_coordinate <= display_size)
-		snake_y_coordinate -= 1;
+		if(snake_y_coordinate < display_size)
+		snake_y_coordinate += 1;
 		break;
 	case DOWN:
 		if(snake_y_coordinate >= 0)
-		snake_y_coordinate += 1;
+		snake_y_coordinate -= 1;
 		break;
 	case RIGHT:
-		if(snake_x_coordinate <= display_size)
+		if(snake_x_coordinate < display_size)
 		snake_x_coordinate += 1;
 		break;
 	case LEFT:
@@ -143,6 +156,16 @@ void convert_snake_coordinates(uint8_t* array)
 {
 	array[snake_x_coordinate] |= 1 << snake_y_coordinate;
 }
+
+bool check_game_over(int x, int y)
+{
+	if((x == display_size || y == display_size||  x == -1 || y == -1) && game_state == START){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -356,17 +379,42 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOI_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
 
-  /*Configure GPIO pin : DOWN_BTN_Pin */
-  GPIO_InitStruct.Pin = DOWN_BTN_Pin;
+  /*Configure GPIO pin : RIGHT_BTN_Pin */
+  GPIO_InitStruct.Pin = RIGHT_BTN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(DOWN_BTN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(RIGHT_BTN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PC13 DOWN_BTN_Pin UP_BTN_Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|DOWN_BTN_Pin|UP_BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PI1 LEFT_BTN_Pin GAME_START_BTN_Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|LEFT_BTN_Pin|GAME_START_BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOI, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI4_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
@@ -380,6 +428,34 @@ HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		    prev_start_time_down_btn = HAL_GetTick();
 
 		    direction = DOWN;
+		}else if(GPIO_Pin == UP_BTN_Pin){
+		    if (HAL_GetTick() - 300 < prev_start_time_up_btn) {
+		      return;
+		    }
+		    prev_start_time_up_btn = HAL_GetTick();
+
+		    direction = UP;
+		}else if(GPIO_Pin == RIGHT_BTN_Pin){
+		    if (HAL_GetTick() - 300 < prev_start_time_right_btn) {
+		      return;
+		    }
+		    prev_start_time_up_btn = HAL_GetTick();
+
+		    direction = RIGHT;
+		}else if(GPIO_Pin == LEFT_BTN_Pin){
+		    if (HAL_GetTick() - 300 < prev_start_time_left_btn) {
+		      return;
+		    }
+		    prev_start_time_up_btn = HAL_GetTick();
+
+		    direction = LEFT;
+		}else if(GPIO_Pin == GAME_START_BTN_Pin){
+		    if (HAL_GetTick() - 300 < prev_start_time_game_start_btn) {
+		      return;
+		    }
+		    prev_start_time_game_start_btn = HAL_GetTick();
+
+		    game_state = START;
 		}
 }
 /* USER CODE END 4 */
@@ -421,13 +497,22 @@ void StartControlLEDM(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  uint8_t snake_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-	  set_snake_direction(direction);
-	  convert_snake_coordinates(snake_display);
-  	  set_led_matrix(snake_display);
-  	  osDelay(500);
-  	  //osThreadResume(MoveDotHandle);
-  	  //osThreadSuspend(NULL);
+
+	  if(game_state != GAME_OVER){
+		  uint8_t snake_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+		  convert_snake_coordinates(snake_display);
+	  	  set_led_matrix(snake_display);
+	  	  osDelay(500);
+	  	  osThreadResume(MoveDotHandle);
+	  	  osThreadSuspend(NULL);
+	  }else if(game_state == GAME_OVER){
+		  uint8_t game_over_display[] ={0x01, 0x62, 0x64, 0x04, 0x04, 0x64, 0x62, 0x01};
+	  	  set_led_matrix(game_over_display);
+	  	  osDelay(50);
+	  	  osThreadResume(MoveDotHandle);
+	  	  osThreadSuspend(NULL);
+	  }
+
       }
   /* USER CODE END StartControlLEDM */
 }
@@ -445,33 +530,26 @@ void StartMoveDot(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  //set_snake_direction(direction);
-	  //osThreadResume(ControlLEDMHandle);
-	  //osThreadSuspend(NULL);
-	  //convert_snake_coordinates();
-
-/*
-	  //set_snake_direction(direction);
-
-	  //set_snake_direction(DOWN);
-	  for(int i = 0; i <= display_size; ++i){
-		 // osMutexWait(displayMutexHandle, osWaitForever);
+	  if(game_state == INIT){
+		  osThreadResume(ControlLEDMHandle);
+		  osThreadSuspend(NULL);
+	  }else if(game_state == START){
 		  set_snake_direction(direction);
-		  snake_display[i] = snake_x_coordinate;
-		  if(direction == DOWN){
-			  snake_display[i] = convert_snake_coordinates();
+		  if(check_game_over(snake_x_coordinate, snake_y_coordinate)){
+			  game_state = GAME_OVER;
 		  }
-
-		  if(i > 0 && i < 8){
-			  snake_display[i - 1] = 0x00;
-		  }else if(i == display_size){
-  			  snake_display[i] = 0x00;
-  		  }
-		 // osMutexRelease(displayMutexHandle);
+		  osThreadResume(ControlLEDMHandle);
+		  osThreadSuspend(NULL);
+	  }else if(game_state == GAME_OVER){
+		  snake_x_coordinate = 0;
+		  snake_y_coordinate = 0;
+		  direction = UP;
+		  //set_snake_direction(direction);
 		  osThreadResume(ControlLEDMHandle);
 		  osThreadSuspend(NULL);
 	  }
-*/
+
+	  osDelay(10);
   }
   /* USER CODE END StartMoveDot */
 }
