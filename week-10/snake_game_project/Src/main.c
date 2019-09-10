@@ -53,8 +53,7 @@ osThreadId MoveDotHandle;
 osMutexId displayMutexHandle;
 /* USER CODE BEGIN PV */
 uint8_t display_size = 8;
-uint8_t dot_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-uint8_t snake_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+//uint8_t snake_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 uint8_t snake_x_coordinate = 0x00;
 uint8_t snake_y_coordinate = 0x00;
 
@@ -68,7 +67,7 @@ typedef enum direction{
 
 direction_t direction = DEFAULT;
 //button debounce
-prev_start_time_down_btn = 0;
+int prev_start_time_down_btn = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,6 +82,7 @@ void StartMoveDot(void const * argument);
 void clear_led_matrix();
 void set_led_matrix(const uint8_t* data);
 void set_snake_direction(direction_t direction);
+void convert_snake_coordinates(uint8_t* array);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -114,21 +114,34 @@ void set_snake_direction(direction_t direction)
 {
 	switch(direction){
 	case DEFAULT:
-		snake_x_coordinate = 0x80;
-		snake_y_coordinate = 0x00;
+		if(snake_x_coordinate <= display_size && snake_x_coordinate >= 0)
+		snake_x_coordinate += 1;
+		//snake_y_coordinate = 0;
 		break;
 	case UP:
+		if(snake_y_coordinate <= display_size)
+		snake_y_coordinate -= 1;
 		break;
 	case DOWN:
-		snake_x_coordinate /= 2;
+		if(snake_y_coordinate >= 0)
+		snake_y_coordinate += 1;
 		break;
 	case RIGHT:
+		if(snake_x_coordinate <= display_size)
+		snake_x_coordinate += 1;
 		break;
 	case LEFT:
+		if(snake_x_coordinate >= 0)
+		snake_x_coordinate -= 1;
 		break;
 	default:
 		break;
 	}
+}
+
+void convert_snake_coordinates(uint8_t* array)
+{
+	array[snake_x_coordinate] |= 1 << snake_y_coordinate;
 }
 /* USER CODE END 0 */
 
@@ -408,10 +421,13 @@ void StartControlLEDM(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+	  uint8_t snake_display[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	  set_snake_direction(direction);
+	  convert_snake_coordinates(snake_display);
   	  set_led_matrix(snake_display);
   	  osDelay(500);
-  	  osThreadResume(MoveDotHandle);
-  	  osThreadSuspend(NULL);
+  	  //osThreadResume(MoveDotHandle);
+  	  //osThreadSuspend(NULL);
       }
   /* USER CODE END StartControlLEDM */
 }
@@ -429,7 +445,12 @@ void StartMoveDot(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+	  //set_snake_direction(direction);
+	  //osThreadResume(ControlLEDMHandle);
+	  //osThreadSuspend(NULL);
+	  //convert_snake_coordinates();
 
+/*
 	  //set_snake_direction(direction);
 
 	  //set_snake_direction(DOWN);
@@ -437,28 +458,20 @@ void StartMoveDot(void const * argument)
 		 // osMutexWait(displayMutexHandle, osWaitForever);
 		  set_snake_direction(direction);
 		  snake_display[i] = snake_x_coordinate;
+		  if(direction == DOWN){
+			  snake_display[i] = convert_snake_coordinates();
+		  }
+
 		  if(i > 0 && i < 8){
 			  snake_display[i - 1] = 0x00;
 		  }else if(i == display_size){
-  			  dot_display[i] = 0x00;
+  			  snake_display[i] = 0x00;
   		  }
 		 // osMutexRelease(displayMutexHandle);
 		  osThreadResume(ControlLEDMHandle);
 		  osThreadSuspend(NULL);
 	  }
-	  /*
-  	  for(int i = 0; i <= display_size; ++i){
-  		  dot_display[i] = 0x08;
-  		  if(i > 0 && i < 8){
-  			  dot_display[i - 1] = 0x00;
-
-  		  }else if(i == display_size - 1){
-  			  dot_display[i] = 0x00;
-  		  }
-  		osThreadResume(ControlLEDMHandle);
-    	//osDelay(500);
-    	osThreadSuspend(NULL);
-  	  }*/
+*/
   }
   /* USER CODE END StartMoveDot */
 }
