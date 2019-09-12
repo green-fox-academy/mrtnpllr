@@ -111,6 +111,12 @@ coord_t generate_random_data()
 
 void print_linked_list(node_t* list)
 {
+	if(list == NULL){
+		char tmp[32];
+		sprintf(tmp, "Empty list!\n");
+		HAL_UART_Transmit(&huart1, (uint8_t*)tmp, strlen(tmp), 50);
+	}
+
 	int i = 0;
 	for(node_t* p = list; p != NULL; p = p->next){
 	  char tmp[128];
@@ -633,6 +639,11 @@ void StartPopBackList(void const * argument)
 
 	  osMutexWait(listMutexHandle, osWaitForever);
 	  linked_list_pop_back(store_random);
+	  /*here
+	  if(store_random->next == NULL && (TIM5->ARR + 15000) > 15000){
+		  linked_list_deallocate(store_random);
+	  }
+	  */
       osMutexRelease(listMutexHandle);
     osDelay(1);
   }
