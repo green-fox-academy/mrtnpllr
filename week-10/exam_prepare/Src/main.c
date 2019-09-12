@@ -31,10 +31,10 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-typedef enum button_state{
-	PUSH,
-	RELEASE
-}button_state_t;
+typedef enum timer_state{
+	TICK,
+	NO_TICK
+}timer_state_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -65,14 +65,18 @@ osThreadId RecCommHandle;
 osMutexId listMutexHandle;
 /* USER CODE BEGIN PV */
 //System check vars
-int flagecske = 0;
 int tick = 0;
-int timer_flag = 0;
+int system_start_flag = 0;
 int button_push_start_time;
 volatile int prev_tick;
+int timer_no_tick_check = 0;
+int wrong_message_counter = 0;
+timer_state_t timer_state = TICK;
 //Used vars
 node_t* store_random;
-
+char uart_buffer;
+char command[128];
+int uart_char_counter = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -154,6 +158,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim5);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_UART_Receive_IT(&huart1, (uint8_t*)(&uart_buffer), 1);
   /* USER CODE END 2 */
 
   /* Create the mutex(es) */
@@ -538,6 +543,25 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	if(huart->Instance == USART1) {
+		if(system_start_flag){
+			//HAL_UART_Receive_IT(&huart1, (uint8_t*)(&buffer_bela), 1);
+			command[uart_char_counter] = uart_buffer;
+			if(uart_buffer != '\0') {
+				uart_char_counter++;
+			} else {
+				//should_print = 1;
+				osSignalSet(RecCommHandle, 3);
+				//command[uart_char_counter + 1] = '\0';
+				uart_char_counter = 0;
+			}
+
+			HAL_UART_Receive_IT(&huart1, (uint8_t*)(&uart_buffer), 1);
+		}
+	}
+}
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -562,7 +586,6 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	//timer_flag = 1;
 
     osDelay(1);
   }
@@ -651,6 +674,16 @@ void StartRecComm(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+	  osSignalWait(3, osWaitForever);
+
+	  if(!strcmp(command, "STOP\0")){
+		  timer_state = NO_TICK;
+	  }else if(!strcmp(command, "START\0")){
+		  timer_state = TICK;
+	  }else {
+		  wrong_message_counter++;
+	  }
+
     osDelay(1);
   }
   /* USER CODE END StartRecComm */
@@ -668,13 +701,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
   if(htim->Instance == TIM5){
-	  if(!timer_flag){
-		  timer_flag = 1;
+	  if(!system_start_flag){
+		  system_start_flag = 1;
 
 		  return;
 	  }
 
-	  osSignalSet(AppendListHandle, 1);
+	  if(timer_state == TICK){
+		  osSignalSet(AppendListHandle, 1);
+	  }else if(timer_state == NO_TICK){
+		  timer_no_tick_check = 23;
+	  }
   }
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM14) {
