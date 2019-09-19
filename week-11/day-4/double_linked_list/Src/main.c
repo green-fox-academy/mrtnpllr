@@ -24,9 +24,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "linked_list.h"
-#include <stdio.h>
+#include "double_linked_list.h"
 #include <string.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,64 +45,51 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef hadc3;
+
+RNG_HandleTypeDef hrng;
 
 TIM_HandleTypeDef htim5;
 
 UART_HandleTypeDef huart1;
 
 osThreadId defaultTaskHandle;
-osThreadId RecCommHandle;
 osThreadId PrintHandle;
-osThreadId DeallocHandle;
-osMutexId linked_listHandle;
+osThreadId DoEverythingHandle;
 /* USER CODE BEGIN PV */
-int sys_init_flag = 0;
-char uart_buffer;
-char command_buffer[128];
-char* command;
-int uart_char_counter = 0;
-node_t* command_list;
+volatile int sys_init_flag;
+double_linked_list_t* list;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_ADC3_Init(void);
+static void MX_RNG_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_USART1_UART_Init(void);
 void StartDefaultTask(void const * argument);
-void StartRecComm(void const * argument);
 void StartPrint(void const * argument);
-void StartDealloc(void const * argument);
+void StartDoEverything(void const * argument);
 
 /* USER CODE BEGIN PFP */
-void print_uart();
-void print_linked_list(node_t* linked_list);
+void print_shit();
+void print_linked_list(double_linked_list_t* list);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void print_uart()
+void print_shit()
 {
-	char tmp[32];
-	sprintf(tmp, "Fakajuuu\r\n");
-	HAL_UART_Transmit(&huart1, (uint8_t*)tmp, strlen(tmp), 50);
+	  char tmp[64];
+	  sprintf(tmp, "Kocsog UART\r\n");
+	  HAL_UART_Transmit(&huart1, (uint8_t*)tmp, strlen(tmp), 50);
 }
 
-void print_linked_list(node_t* linked_list)
+void print_linked_list(double_linked_list_t* list)
 {
-	if(linked_list == NULL){
-		char tmp[32];
-		sprintf(tmp, "EMPTY LIST\r\n");
-		HAL_UART_Transmit(&huart1, (uint8_t*)tmp, strlen(tmp), 50);
-
-	}
-
 	int element_counter = 0;
-	for(node_t* p = linked_list; p != NULL; p = p->next){
+	for(node_t* p = list->head; p != NULL; p = p->next){
 	  char tmp[128];
-	  sprintf(tmp, "List element at %d.: %s\r\n", (element_counter + 1), p->data);
+	  sprintf(tmp, "List element X at %d.: %d\nList element Y at %d.: %d\n", (element_counter + 1), p->data.coord_x, (element_counter + 1), p->data.coord_y);
 	  HAL_UART_Transmit(&huart1, (uint8_t*)tmp, strlen(tmp), 50);
 	  element_counter++;
 	}
@@ -133,23 +120,17 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  linked_list_create(&command_list);
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC3_Init();
+  MX_RNG_Init();
   MX_TIM5_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim5);
-  HAL_UART_Receive_IT(&huart1, (uint8_t*)(&uart_buffer), 1);
   /* USER CODE END 2 */
-
-  /* Create the mutex(es) */
-  /* definition and creation of linked_list */
-  osMutexDef(linked_list);
-  linked_listHandle = osMutexCreate(osMutex(linked_list));
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -172,17 +153,13 @@ int main(void)
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  /* definition and creation of RecComm */
-  osThreadDef(RecComm, StartRecComm, osPriorityNormal, 0, 256);
-  RecCommHandle = osThreadCreate(osThread(RecComm), NULL);
-
   /* definition and creation of Print */
   osThreadDef(Print, StartPrint, osPriorityNormal, 0, 256);
   PrintHandle = osThreadCreate(osThread(Print), NULL);
 
-  /* definition and creation of Dealloc */
-  osThreadDef(Dealloc, StartDealloc, osPriorityNormal, 0, 256);
-  DeallocHandle = osThreadCreate(osThread(Dealloc), NULL);
+  /* definition and creation of DoEverything */
+  osThreadDef(DoEverything, StartDoEverything, osPriorityNormal, 0, 256);
+  DoEverythingHandle = osThreadCreate(osThread(DoEverything), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -220,7 +197,7 @@ void SystemClock_Config(void)
   /** Configure the main internal regulator output voltage 
   */
   __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
@@ -228,11 +205,17 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 10;
-  RCC_OscInitStruct.PLL.PLLN = 210;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 50;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 3;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Activate the Over-Drive mode 
+  */
+  if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
     Error_Handler();
   }
@@ -242,15 +225,16 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
   {
     Error_Handler();
   }
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART1;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_CLK48;
   PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
+  PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLL;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -258,52 +242,28 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief ADC3 Initialization Function
+  * @brief RNG Initialization Function
   * @param None
   * @retval None
   */
-static void MX_ADC3_Init(void)
+static void MX_RNG_Init(void)
 {
 
-  /* USER CODE BEGIN ADC3_Init 0 */
+  /* USER CODE BEGIN RNG_Init 0 */
 
-  /* USER CODE END ADC3_Init 0 */
+  /* USER CODE END RNG_Init 0 */
 
-  ADC_ChannelConfTypeDef sConfig = {0};
+  /* USER CODE BEGIN RNG_Init 1 */
 
-  /* USER CODE BEGIN ADC3_Init 1 */
-
-  /* USER CODE END ADC3_Init 1 */
-  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
-  */
-  hadc3.Instance = ADC3;
-  hadc3.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
-  hadc3.Init.Resolution = ADC_RESOLUTION_12B;
-  hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc3.Init.ContinuousConvMode = DISABLE;
-  hadc3.Init.DiscontinuousConvMode = DISABLE;
-  hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc3.Init.NbrOfConversion = 1;
-  hadc3.Init.DMAContinuousRequests = DISABLE;
-  hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  if (HAL_ADC_Init(&hadc3) != HAL_OK)
+  /* USER CODE END RNG_Init 1 */
+  hrng.Instance = RNG;
+  if (HAL_RNG_Init(&hrng) != HAL_OK)
   {
     Error_Handler();
   }
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-  */
-  sConfig.Channel = ADC_CHANNEL_0;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
-  if (HAL_ADC_ConfigChannel(&hadc3, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC3_Init 2 */
+  /* USER CODE BEGIN RNG_Init 2 */
 
-  /* USER CODE END ADC3_Init 2 */
+  /* USER CODE END RNG_Init 2 */
 
 }
 
@@ -326,9 +286,9 @@ static void MX_TIM5_Init(void)
 
   /* USER CODE END TIM5_Init 1 */
   htim5.Instance = TIM5;
-  htim5.Init.Prescaler = 8400-1;
+  htim5.Init.Prescaler = 5000-1;
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 30000;
+  htim5.Init.Period = 20000;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
@@ -394,75 +354,17 @@ static void MX_USART1_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOI_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
-
-  /*Configure GPIO pin : USR_BTN_Pin */
-  GPIO_InitStruct.Pin = USR_BTN_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(USR_BTN_GPIO_Port, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
 /* USER CODE BEGIN 4 */
-/*
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if(huart->Instance == USART1) {
-		if(sys_init_flag ){
-			command[uart_char_counter] = uart_buffer;
-			if(uart_buffer != '\0') {
-				uart_char_counter++;
-			} else {
-				command[uart_char_counter + 1] = '\0';
-				uart_char_counter = 0;
-				osSignalSet(RecCommHandle, 2);
-			}
 
-
-
-			//HAL_UART_Receive_IT(&huart1, (uint8_t*)(&uart_buffer), 1);
-			//osSignalSet(RecCommHandle, 2);
-		}
-	}
-}
-*/
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if(huart->Instance == USART1) {
-		if(sys_init_flag ){
-			//HAL_UART_Receive_IT(&huart1, (uint8_t*)(&buffer_bela), 1);
-			command_buffer[uart_char_counter] = uart_buffer;
-			if(uart_buffer != '\0') {
-				uart_char_counter++;
-			} else {
-				//osSignalSet(RecCommHandle, 3);
-				command_buffer[uart_char_counter + 1] = '\0';
-				uart_char_counter = 0;
-				osSignalSet(RecCommHandle, 2);
-			}
-
-			HAL_UART_Receive_IT(&huart1, (uint8_t*)(&uart_buffer), 1);
-		}
-	}
-}
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	if(GPIO_Pin == USR_BTN_Pin){
-		osSignalSet(DeallocHandle, 5);
-	}
-}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -479,7 +381,6 @@ void StartDefaultTask(void const * argument)
     
     
     
-    
 
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
@@ -488,39 +389,6 @@ void StartDefaultTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END 5 */ 
-}
-
-/* USER CODE BEGIN Header_StartRecComm */
-/**
-* @brief Function implementing the RecComm thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartRecComm */
-void StartRecComm(void const * argument)
-{
-  /* USER CODE BEGIN StartRecComm */
-  /* Infinite loop */
-  for(;;)
-  {
-	  osSignalWait(2, osWaitForever);
-	  osMutexWait(linked_listHandle, osWaitForever);
-
-	  /*for(int i = 0; i < 128; ++i){
-		  command[i] = command_buffer[i];
-	  }*/
-	  command = (char*)pvPortMalloc(strlen(command_buffer));
-	  for(int i = 0; i < 128; ++i){
-		  command[i] = command_buffer[i];
-	  }
-
-	  linked_list_push_back(&command_list, command);
-
-	  osMutexRelease(linked_listHandle);
-
-    osDelay(1);
-  }
-  /* USER CODE END StartRecComm */
 }
 
 /* USER CODE BEGIN Header_StartPrint */
@@ -537,38 +405,36 @@ void StartPrint(void const * argument)
   for(;;)
   {
 	  osSignalWait(1, osWaitForever);
-	  osMutexWait(linked_listHandle, osWaitForever);
-	  print_linked_list(command_list);
-	  osMutexRelease(linked_listHandle);
+	  print_shit();
 
     osDelay(1);
   }
   /* USER CODE END StartPrint */
 }
 
-/* USER CODE BEGIN Header_StartDealloc */
+/* USER CODE BEGIN Header_StartDoEverything */
 /**
-* @brief Function implementing the Dealloc thread.
+* @brief Function implementing the DoEverything thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartDealloc */
-void StartDealloc(void const * argument)
+/* USER CODE END Header_StartDoEverything */
+void StartDoEverything(void const * argument)
 {
-  /* USER CODE BEGIN StartDealloc */
+  /* USER CODE BEGIN StartDoEverything */
+	linked_list_create(list);
   /* Infinite loop */
   for(;;)
   {
-	  osSignalWait(5, osWaitForever);
-	  osMutexWait(linked_listHandle, osWaitForever);
-	  linked_list_deallocate(&command_list);
-	  linked_list_create(&command_list);
-	  osMutexRelease(linked_listHandle);
+	  coordinates_t data;
+	  data.coord_x = 10;
+	  data.coord_y = 20;
 
+	  linked_list_push_back(list, data);
 
-    osDelay(1);
+    osDelay(1000);
   }
-  /* USER CODE END StartDealloc */
+  /* USER CODE END StartDoEverything */
 }
 
 /**
@@ -582,20 +448,21 @@ void StartDealloc(void const * argument)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
-  if(htim->Instance == TIM5){
-	  if(!sys_init_flag){
-		  sys_init_flag = 1;
-		  return;
-	  }
 
-	  osSignalSet(PrintHandle, 1);
-  }
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM14) {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
+  if(htim->Instance == TIM5){
+	  if(!sys_init_flag){
+		  sys_init_flag = 1;
 
+		  return;
+	  }
+
+	  osSignalSet(PrintHandle, 1);
+  }
   /* USER CODE END Callback 1 */
 }
 

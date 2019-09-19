@@ -6,25 +6,22 @@ void linked_list_create(node_t** head)
 	*head = NULL;
 }
 
-void linked_list_deallocate(node_t **head)
+void linked_list_deallocate(node_t *head)
 {
 
-	if(*head == NULL){
+	if(head == NULL){
 		return;
 	}
 
-	node_t* p = *head;
+	node_t* p = head;
 	while(p != NULL){
 		node_t* tmp = p->next;
-		p->next = NULL;
 		vPortFree(p);
 		p = tmp;
 	}
-
-	*head = NULL;
 }
 
-void linked_list_push_back(node_t **head, char* data)
+void linked_list_push_back(node_t **head, int data)
 {
 	if(*head == NULL){
 	    node_t* new_node = (node_t*)pvPortMalloc(sizeof(node_t));
@@ -48,7 +45,7 @@ void linked_list_push_back(node_t **head, char* data)
     temp_ptr->next = new_node;
 }
 
-void linked_list_push_front(node_t **head, char* data)
+void linked_list_push_front(node_t **head, int data)
 {
 	if(*head == NULL){
 		node_t* new_node = (node_t*)pvPortMalloc(sizeof(node_t));

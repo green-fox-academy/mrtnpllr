@@ -9,8 +9,8 @@ typedef struct node{
 	struct node* next;
 }node_t;
 
-void linked_list_create();
-void linked_list_deallocate(node_t *head);
+void linked_list_create(node_t** head);
+void linked_list_deallocate(node_t **head);
 void linked_list_push_back(node_t **head, char* data);
 void linked_list_push_front(node_t **head, char* data);
 void linked_list_pop_back(node_t **head);
