@@ -509,10 +509,12 @@ void StartRecComm(void const * argument)
 	  /*for(int i = 0; i < 128; ++i){
 		  command[i] = command_buffer[i];
 	  }*/
+
 	  command = (char*)pvPortMalloc(strlen(command_buffer));
-	  for(int i = 0; i < 128; ++i){
+	  strcpy(command, command_buffer);
+	  /*for(int i = 0; i < 128; ++i){
 		  command[i] = command_buffer[i];
-	  }
+	  }*/
 
 	  linked_list_push_back(&command_list, command);
 
